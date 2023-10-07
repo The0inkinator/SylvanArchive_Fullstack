@@ -2,12 +2,12 @@
 //An overall outline of each function will be noted
 //at the top and step by step processes are noted throughout
 
-import { createSignal, createEffect } from 'solid-js';
+import { createSignal, createEffect } from "solid-js";
 
 interface CardIdOptions {
   cardSet?: string;
   cardCollectNum?: number;
-  cardFace?: 'front' | 'back';
+  cardFace?: "front" | "back";
 }
 
 //The CardArtFetcher function takes a card name and then returns the cards art as a url
@@ -48,7 +48,7 @@ export function CardArtFetcher(
     };
 
     //Sets state for which face of the card to return
-    if (cardFace === 'back') {
+    if (cardFace === "back") {
       setSelectedCardFace(1);
     } else {
       setSelectedCardFace(0);
@@ -74,7 +74,6 @@ export function CardArtFetcher(
         const cardListObj = await cardListFetch.json();
         //Creates an array where each item is a card version as an object
         const cardVersions = cardListObj.data;
-
         //Handles the variation in scryfalls format based on a cards number of faces
         if (initCard.card_faces) {
           setInitCardArt(initCard.card_faces[selectedCardFace()]);
@@ -134,12 +133,12 @@ export function CardArtFetcher(
 
         //If a is input that is not found. Makes function always output fblthp art
         resolve(
-          'https://cards.scryfall.io/art_crop/front/5/2/52558748-6893-4c72-a9e2-e87d31796b59.jpg?1559959349'
+          "https://cards.scryfall.io/art_crop/front/5/2/52558748-6893-4c72-a9e2-e87d31796b59.jpg?1559959349"
         );
       } catch (error) {
         //If there is an error in the process it logs it and returns fblthp art
         resolve(
-          'https://cards.scryfall.io/art_crop/front/5/2/52558748-6893-4c72-a9e2-e87d31796b59.jpg?1559959349'
+          "https://cards.scryfall.io/art_crop/front/5/2/52558748-6893-4c72-a9e2-e87d31796b59.jpg?1559959349"
         );
         console.error(`Error fetching card image for ${cardName}`, error);
       }
@@ -185,7 +184,7 @@ export function CardFetcher(
     };
 
     //Sets state for which face of the card to return
-    if (cardFace === 'back') {
+    if (cardFace === "back") {
       setSelectedCardFace(1);
     } else {
       setSelectedCardFace(0);
@@ -269,12 +268,12 @@ export function CardFetcher(
 
         //If a is input that is not found. Makes function always output fblthp art
         resolve(
-          'https://cards.scryfall.io/png/front/5/2/52558748-6893-4c72-a9e2-e87d31796b59.png?1559959349'
+          "https://cards.scryfall.io/png/front/5/2/52558748-6893-4c72-a9e2-e87d31796b59.png?1559959349"
         );
       } catch (error) {
         //If there is an error in the process it logs it and returns fblthp art
         resolve(
-          'https://cards.scryfall.io/png/front/5/2/52558748-6893-4c72-a9e2-e87d31796b59.png?1559959349'
+          "https://cards.scryfall.io/png/front/5/2/52558748-6893-4c72-a9e2-e87d31796b59.png?1559959349"
         );
         console.error(`Error fetching card image for ${cardName}`, error);
       }
@@ -320,7 +319,7 @@ export function SmallCardFetcher(
     };
 
     //Sets state for which face of the card to return
-    if (cardFace === 'back') {
+    if (cardFace === "back") {
       setSelectedCardFace(1);
     } else {
       setSelectedCardFace(0);
@@ -404,12 +403,12 @@ export function SmallCardFetcher(
 
         //If a is input that is not found. Makes function always output fblthp art
         resolve(
-          'https://cards.scryfall.io/png/front/5/2/52558748-6893-4c72-a9e2-e87d31796b59.png?1559959349'
+          "https://cards.scryfall.io/png/front/5/2/52558748-6893-4c72-a9e2-e87d31796b59.png?1559959349"
         );
       } catch (error) {
         //If there is an error in the process it logs it and returns fblthp art
         resolve(
-          'https://cards.scryfall.io/png/front/5/2/52558748-6893-4c72-a9e2-e87d31796b59.png?1559959349'
+          "https://cards.scryfall.io/png/front/5/2/52558748-6893-4c72-a9e2-e87d31796b59.png?1559959349"
         );
         console.error(`Error fetching card image for ${cardName}`, error);
       }
