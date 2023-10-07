@@ -29,18 +29,14 @@ export default function ShelfScene() {
 
   onMount(() => {
     buildStackMap();
-
     setStackList((prevList) => [
       ...prevList,
       <Stack stackID="starting_none" stackNum={stackState().stackCount} />,
     ]);
+    stackState().stackCount = stackList().length;
 
     setMargins();
   });
-
-  // createEffect(() => {
-  //   console.log(stackState().stackCount);
-  // });
 
   function setMargins() {
     setTimeout(() => {
@@ -108,7 +104,7 @@ export default function ShelfScene() {
   }
 
   createEffect(() => {
-    if (stackState().stacksToClose > 0) {
+    if (stackState().stacksToClose > 0 && stackState().stackCount > 1) {
       const countLessHovered =
         stackState().stackCount - stackState().hoveredStack;
       const adjustedStackCount = (() => {
