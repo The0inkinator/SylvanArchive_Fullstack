@@ -1,11 +1,10 @@
-import server$ from "solid-start/server";
-import { createRouteAction } from "solid-start";
-import { createServerAction$ } from "solid-start/server";
+import { request } from "http";
 import { MongoClient } from "mongodb";
-import { createEffect } from "solid-js";
 import { json } from "solid-start/server";
+const cors = require("cors");
 
 export async function GET() {
+  const corsMiddleWare = cors();
   const uri =
     "mongodb+srv://SylvanArchiveAPI:getAPIPass@sylvanarchivedb.zodmskg.mongodb.net/";
   const client = new MongoClient(uri);
@@ -21,7 +20,9 @@ export async function GET() {
       await client.close();
       console.log("Connection closed");
       console.log("returning data");
-      resolve(json(bindersData));
+      corsMiddleWare(request, () => {
+        resolve(json(bindersData));
+      });
     } catch (err) {
       console.error("Error connecting to database", err);
       const errorData = { error: "error" };
