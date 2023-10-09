@@ -21,33 +21,31 @@ export default function cardListPage() {
   const pathInput = useParams();
   cardListFetcher(`${pathInput.cardList}`);
 
-  const [mongoData, getMongoData] = createServerAction$(async () => {
-    const uri =
-      "mongodb+srv://SylvanArchiveAPI:getAPIPass@sylvanarchivedb.zodmskg.mongodb.net/";
-    const client = new MongoClient(uri);
-    let data: any;
-    try {
-      await client.connect();
-      const db = client.db("sylvanArchiveDB");
-      console.log("connected");
-      const binders = db.collection("binders");
-      const cursor = binders.find({});
-      const bindersData = await cursor.toArray();
-      data = bindersData;
-      await client.close();
-      console.log("Connection closed");
-    } catch (err) {
-      console.error("Error connecting to database", err);
-    }
-    console.log(data);
-    return data;
-  });
-
-  // getMongoData();
+  // const [mongoData, getMongoData] = createServerAction$(async () => {
+  //   const uri =
+  //     "mongodb+srv://SylvanArchiveAPI:getAPIPass@sylvanarchivedb.zodmskg.mongodb.net/";
+  //   const client = new MongoClient(uri);
+  //   let data: any;
+  //   try {
+  //     await client.connect();
+  //     const db = client.db("sylvanArchiveDB");
+  //     console.log("connected");
+  //     const binders = db.collection("binders");
+  //     const cursor = binders.find({});
+  //     const bindersData = await cursor.toArray();
+  //     data = bindersData;
+  //     await client.close();
+  //     console.log("Connection closed");
+  //   } catch (err) {
+  //     console.error("Error connecting to database", err);
+  //   }
+  //   console.log(data);
+  //   return data;
+  // });
 
   const getTestData = async () => {
     try {
-      const initData = await fetch("https:/www.sylvanarchive.com/api/test");
+      const initData = await fetch("http://localhost:3000/api/test");
       const jsonData = await initData.json();
       console.log(jsonData);
     } catch (err) {
@@ -56,10 +54,6 @@ export default function cardListPage() {
   };
 
   getTestData();
-
-  // createEffect(() => {
-  //   console.log(mongoData.result);
-  // });
 
   return (
     <>
