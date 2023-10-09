@@ -1,13 +1,32 @@
 import server$ from "solid-start/server";
+import { createRouteAction } from "solid-start";
+import { createServerAction$ } from "solid-start/server";
+import { MongoClient } from "mongodb";
+import { createEffect } from "solid-js";
+import { json } from "solid-start/server";
 
-export function GET() {
-  const data = { 1: 1 };
+export async function GET() {
+  const uri =
+    "mongodb+srv://SylvanArchiveAPI:getAPIPass@sylvanarchivedb.zodmskg.mongodb.net/";
+  const client = new MongoClient(uri);
 
-  const json = JSON.stringify(data);
+  try {
+    await client.connect();
+    const db = client.db("sylvanArchiveDB");
+    console.log("connected");
+    const binders = db.collection("binders");
+    const cursor = binders.find({});
+    const bindersData = await cursor.toArray();
 
-  return new Response(json, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+    await client.close();
+
+    console.log("Connection closed");
+    console.log("returning data");
+    return json(bindersData);
+  } catch (err) {
+    console.error("Error connecting to database", err);
+    const errorData = { error: "error" };
+    const data = JSON.stringify(errorData);
+    return json(data);
+  }
 }
