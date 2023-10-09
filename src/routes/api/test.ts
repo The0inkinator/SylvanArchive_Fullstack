@@ -30,5 +30,7 @@ export async function GET() {
   //   return json(data);
   // }
 
-  return json({ test: "hello" });
+  return new Promise((resolve, reject) => {
+    resolve(json({ test: "hello" }));
+  });
 }
