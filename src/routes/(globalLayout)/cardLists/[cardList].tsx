@@ -45,7 +45,7 @@ export default function cardListPage() {
 
   const getTestData = async () => {
     try {
-      const initData = await fetch("http://localhost:3000/api/test");
+      const initData = await fetch("/api/test");
       const jsonData = await initData.json();
       console.log(jsonData);
     } catch (err) {
