@@ -10,27 +10,23 @@ export async function GET() {
     "mongodb+srv://SylvanArchiveAPI:getAPIPass@sylvanarchivedb.zodmskg.mongodb.net/";
   const client = new MongoClient(uri);
 
-  // try {
-  //   await client.connect();
-  //   const db = client.db("sylvanArchiveDB");
-  //   console.log("connected");
-  //   const binders = db.collection("binders");
-  //   const cursor = binders.find({});
-  //   const bindersData = await cursor.toArray();
-
-  //   await client.close();
-
-  //   console.log("Connection closed");
-  //   console.log("returning data");
-  //   return json(bindersData);
-  // } catch (err) {
-  //   console.error("Error connecting to database", err);
-  //   const errorData = { error: "error" };
-  //   const data = JSON.stringify(errorData);
-  //   return json(data);
-  // }
-
-  return new Promise((resolve, reject) => {
-    resolve(json({ test: "hello" }));
+  return new Promise(async (resolve, reject) => {
+    try {
+      await client.connect();
+      const db = client.db("sylvanArchiveDB");
+      console.log("connected");
+      const binders = db.collection("binders");
+      const cursor = binders.find({});
+      const bindersData = await cursor.toArray();
+      await client.close();
+      console.log("Connection closed");
+      console.log("returning data");
+      resolve(json(bindersData));
+    } catch (err) {
+      console.error("Error connecting to database", err);
+      const errorData = { error: "error" };
+      const data = JSON.stringify(errorData);
+      resolve(json({ error: "No Data" }));
+    }
   });
 }
