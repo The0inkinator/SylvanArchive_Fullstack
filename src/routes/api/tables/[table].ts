@@ -1,9 +1,8 @@
-import { useParams } from "solid-start";
 import { getTable } from "../../../backend/databaseCollections/getTable";
-import { json } from "solid-start";
+import { type APIEvent, json } from "solid-start";
 
-export async function GET() {
-  const apiInput = useParams();
-  const fetchedTable = await getTable(`${apiInput.table}`);
+export async function GET({ params }: APIEvent) {
+  console.log("HELLO!");
+  const fetchedTable = await getTable(`"${params.table}"`);
   return json(fetchedTable);
 }

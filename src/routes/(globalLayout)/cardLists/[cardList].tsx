@@ -19,21 +19,19 @@ export default function cardListPage() {
   const pathInput = useParams();
   cardListFetcher(`${pathInput.cardList}`);
 
-  // const getTestData = async () => {
-  //   try {
-  //     const initData = await fetch("/api/test");
-  //     const jsonData = await initData.json();
-  //     console.log(jsonData);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
+  const getTestData = async () => {
+    try {
+      const initData = await fetch("/api/tables/binders");
+      const jsonData = await initData.json();
+      console.log(jsonData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  // getTestData();
+  getTestData();
 
-  createEffect(async () => {
-    console.log(await getTable("binders"));
-  });
+  // console.log(getTable("binders"));
 
   return (
     <>
