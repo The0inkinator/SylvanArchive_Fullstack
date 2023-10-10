@@ -1,6 +1,5 @@
 import { MongoClient } from "mongodb";
 import { json } from "solid-start/server";
-import fetch from "../../backend/fetch";
 
 export async function GET() {
   const uri =
@@ -9,17 +8,20 @@ export async function GET() {
 
   let connectionStatus = false;
 
+  let data;
+
   try {
     await client.connect();
     const db = client.db("sylvanArchiveDB");
     console.log("connected");
     connectionStatus = true;
-    // const binders = db.collection("binders");
-    // const cursor = binders.find({});
-    // const bindersData = await cursor.toArray();
-    // await client.close();
-    // console.log("Connection closed");
-    // console.log("returning data");
+    const binders = db.collection("binders");
+    const cursor = binders.find({});
+    const bindersData = await cursor.toArray();
+    data = bindersData;
+    await client.close();
+    console.log("Connection closed");
+    console.log("returning data");
 
     // resolve(json(bindersData));
   } catch (err) {
@@ -30,8 +32,6 @@ export async function GET() {
   }
 
   // const data = await fetch();
-
-  const data = { Status: connectionStatus };
 
   return json(data);
 }
