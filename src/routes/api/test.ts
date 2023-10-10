@@ -1,25 +1,26 @@
 import { MongoClient } from "mongodb";
 import { json } from "solid-start/server";
+import { saMongoClient } from "../../backend/saMongoClient";
 
 export async function GET() {
-  const uri =
-    "mongodb+srv://SylvanArchiveAPI:getAPIPass@sylvanarchivedb.zodmskg.mongodb.net/";
-  const client = new MongoClient(uri);
+  // const uri =
+  //   "mongodb+srv://SylvanArchiveAPI:getAPIPass@sylvanarchivedb.zodmskg.mongodb.net/";
+  // const client = new MongoClient(uri);
 
   let connectionStatus = false;
 
   let data;
 
   try {
-    await client.connect();
-    const db = client.db("sylvanArchiveDB");
+    await saMongoClient().connect();
+    const db = saMongoClient().db("sylvanArchiveDB");
     console.log("connected");
     connectionStatus = true;
     const binders = db.collection("binders");
     const cursor = binders.find({});
     const bindersData = await cursor.toArray();
     data = bindersData;
-    await client.close();
+    await saMongoClient().close();
     console.log("Connection closed");
     console.log("returning data");
 
