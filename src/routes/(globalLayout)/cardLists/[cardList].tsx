@@ -7,7 +7,6 @@ import { MongoClient } from "mongodb";
 import { createEffect } from "solid-js";
 import { useCardListContext } from "~/context/CardListContext";
 import { createRouteAction } from "solid-start";
-import { getTable } from "../../../backend/databaseCollections/getTable";
 
 export default function cardListPage() {
   const [echoing, echo] = createRouteAction(async (message: string) => {
@@ -21,7 +20,7 @@ export default function cardListPage() {
 
   const getTestData = async () => {
     try {
-      const initData = await fetch("/api/tables/binders");
+      const initData = await fetch("http://localhost:3000/api/tables/binders");
       const jsonData = await initData.json();
       console.log(jsonData);
     } catch (err) {
@@ -30,8 +29,6 @@ export default function cardListPage() {
   };
 
   getTestData();
-
-  // console.log(getTable("binders"));
 
   return (
     <>
