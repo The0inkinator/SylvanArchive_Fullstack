@@ -7,9 +7,7 @@ export default async function buildStackMap() {
   const [stackState, { updateStackMapLoadStatus }]: any =
     useStackStateContext();
   try {
-    const bindersData = await fetch(
-      `https://sylvan-archive-api-03b13d1a78b5.herokuapp.com/tables/binders`
-    );
+    const bindersData = await fetch(`/api/tables/binders`);
     const rawBindersMap = await bindersData.json();
     interface rawBinderObject {
       art: string;
