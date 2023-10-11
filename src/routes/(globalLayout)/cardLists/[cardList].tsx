@@ -18,18 +18,6 @@ export default function cardListPage() {
   const pathInput = useParams();
   cardListFetcher(`${pathInput.cardList}`);
 
-  const getTestData = async () => {
-    try {
-      const initData = await fetch("http://localhost:3000/api/tables/binders");
-      const jsonData = await initData.json();
-      console.log(jsonData);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  getTestData();
-
   return (
     <>
       <FrontPageHeader />
