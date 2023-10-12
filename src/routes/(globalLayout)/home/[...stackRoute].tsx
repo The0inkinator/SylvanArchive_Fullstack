@@ -1,22 +1,24 @@
 import styles from "../../../layouts/testStyles.module.css";
 import { useParams } from "@solidjs/router";
-import { useStackMapContext } from "../../../context/StackMapContext";
-import buildStackMap from "../../../components/shelfSystem/shelfScene/buildStackMap";
-import { createEffect } from "solid-js";
+import { createEffect, createSignal, onMount, Switch, For } from "solid-js";
+import MiniStack from "../../../testComponents/miniStack";
 
 export default function stackRoute() {
-  buildStackMap();
-  const [stackMap]: any = useStackMapContext();
+  const [pageState, setPageState] = createSignal<
+    "loading" | "error" | "loaded"
+  >("loading");
   const params = useParams();
   const route = params.stackRoute.split("/");
-  console.log(route);
-  createEffect(() => {
-    console.log(stackMap());
-  });
+
   return (
     <>
       <div class={styles.textCont}>
-        <div class={styles.text}>{params.stackRoute} HELLO!</div>
+        <div>
+          <a href={`${params.stackRoute}/nextRoute`}>Navigate To Next</a>
+          <For each={route} fallback={<div>No Array</div>}>
+            {(item) => <MiniStack stackName={item} />}
+          </For>
+        </div>
       </div>
     </>
   );
