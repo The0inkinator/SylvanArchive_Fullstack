@@ -33,13 +33,18 @@ export default function stackRoute() {
   function addStacks() {
     const currentRoute = params.stackRoute.split("/");
     const newStackNames = currentRoute.slice(miniStackList().length);
-    const newStacksArray = newStackNames.map((name) => {
+    const newStacksArray = newStackNames.map((name) => () => {
       return <MiniStack stackName={name} />;
     });
     return newStacksArray;
   }
 
-  function removeStacks() {}
+  function removeStacks() {
+    const oldRouteLength = pastRoute().split("/");
+    const currentRouteLength = params.stackRoute.split("/");
+    const numberToRemove = oldRouteLength.length - currentRouteLength.length;
+    return numberToRemove;
+  }
 
   onMount(() => {
     const currentRoute = params.stackRoute.split("/");
@@ -54,7 +59,10 @@ export default function stackRoute() {
       setMiniStackList((prevList) => [...prevList, addStacks()]);
       setPastRoute(params.stackRoute);
     } else if (pastRoute() > params.stackRoute) {
-      console.log("backtracked");
+      const newMiniStackList = miniStackList().slice(0, -removeStacks());
+      setMiniStackList(newMiniStackList);
+
+      setPastRoute(params.stackRoute);
     }
   });
 
