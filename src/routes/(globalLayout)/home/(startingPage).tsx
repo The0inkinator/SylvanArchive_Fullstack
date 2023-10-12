@@ -1,11 +1,6 @@
-import FrontPageHeader from "../../../components/layoutComponents/frontPageHeader/FrontPageHeader";
-import ShelfScene from "../../../components/shelfSystem/shelfScene/ShelfScene";
+import { Outlet } from "solid-start";
+import { Navigate } from "solid-start";
 
 export default function home() {
-  return (
-    <>
-      <FrontPageHeader />
-      <ShelfScene />
-    </>
-  );
+  return <Navigate href="/home/start" />;
 }

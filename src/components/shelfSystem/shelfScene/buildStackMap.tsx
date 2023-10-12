@@ -1,4 +1,3 @@
-import { createEffect } from "solid-js";
 import { useStackMapContext } from "../../../context/StackMapContext";
 import { useStackStateContext } from "../../../context/StackStateContext";
 
