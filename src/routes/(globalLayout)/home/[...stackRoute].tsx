@@ -2,21 +2,70 @@ import styles from "../../../layouts/testStyles.module.css";
 import { useParams } from "@solidjs/router";
 import { createEffect, createSignal, onMount, Switch, For } from "solid-js";
 import MiniStack from "../../../testComponents/miniStack";
+import { A, useIsRouting, useLocation } from "@solidjs/router";
 
 export default function stackRoute() {
-  const [pageState, setPageState] = createSignal<
-    "loading" | "error" | "loaded"
-  >("loading");
   const params = useParams();
-  const route = params.stackRoute.split("/");
+  const location = useLocation();
+  const [pastRoute, setPastRoute] = createSignal<string>(params.stackRoute);
+  const [miniStackList, setMiniStackList] = createSignal<any[]>([]);
+
+  // function updateStackList() {
+  //   const route = params.stackRoute.split("/");
+  //   const newStackArray = route.map((routePoint) => {
+  //     return <MiniStack stackName={routePoint} />;
+  //   });
+
+  //   if (newStackArray !== miniStackList()) {
+  //     const newStacks = newStackArray.filter(
+  //       (item) => !miniStackList().includes(item)
+  //     );
+
+  //     console.log("new stacks", newStacks);
+  //     setPastRoute(params.stackRoute);
+  //     return newStacks;
+  //   } else {
+  //     setPastRoute(params.stackRoute);
+  //     return [];
+  //   }
+  // }
+
+  function addStacks() {
+    const currentRoute = params.stackRoute.split("/");
+    const newStackNames = currentRoute.slice(miniStackList().length);
+    const newStacksArray = newStackNames.map((name) => {
+      return <MiniStack stackName={name} />;
+    });
+    return newStacksArray;
+  }
+
+  function removeStacks() {}
+
+  onMount(() => {
+    const currentRoute = params.stackRoute.split("/");
+    const newStackArray = currentRoute.map((routePoint) => {
+      return <MiniStack stackName={routePoint} />;
+    });
+    setMiniStackList(newStackArray);
+  });
+
+  createEffect(() => {
+    if (pastRoute() < params.stackRoute) {
+      setMiniStackList((prevList) => [...prevList, addStacks()]);
+      setPastRoute(params.stackRoute);
+    } else if (pastRoute() > params.stackRoute) {
+      console.log("backtracked");
+    }
+  });
 
   return (
     <>
       <div class={styles.textCont}>
         <div>
-          <a href={`${params.stackRoute}/nextRoute`}>Navigate To Next</a>
-          <For each={route} fallback={<div>No Array</div>}>
-            {(item) => <MiniStack stackName={item} />}
+          <A href={`${params.stackRoute}/nextRoute`}>Navigate To Next</A>
+          <div>{location.pathname}</div>
+          <For each={miniStackList()} fallback={<div>No Array</div>}>
+            {(item) => <div>{item()}</div>}
           </For>
         </div>
       </div>
