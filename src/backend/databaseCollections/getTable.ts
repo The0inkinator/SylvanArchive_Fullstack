@@ -2,7 +2,7 @@ import { saMongoClient } from "../saMongoClient";
 
 export async function getTable(table: string) {
   const mongoClient: any = saMongoClient();
-  let tableData;
+  let tableData = ["no data found"];
   try {
     await mongoClient.connect();
     const db = mongoClient.db("sylvanArchiveDB");
@@ -14,6 +14,6 @@ export async function getTable(table: string) {
     console.error("Error connecting to database", err);
   } finally {
     await mongoClient.close();
-    return tableData;
   }
+  return tableData;
 }
