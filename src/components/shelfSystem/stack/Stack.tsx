@@ -62,14 +62,15 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
   onMount(() => {
     createEffect(() => {
       if (stackState().stackMapLoaded && !stackDataLoaded()) {
-        let childrenOfThisStack = stackMap().filter(
-          (stack: any) => stack.parent === stackID
+        let childrenOfThisStack = stackMap().stackList.filter(
+          (stack: any) => stack.name === stackID
+        );
+        let loadedBinderList = stackMap().binderList.filter((binder: any) =>
+          childrenOfThisStack[0].children.includes(binder.name)
         );
 
-        let loadedBinderList = childrenOfThisStack;
-
-        const errorBinder = stackMap().filter(
-          (binder: any) => binder.name === "emptySlot"
+        const errorBinder = stackMap().binderList.filter(
+          (binder: any) => binder.name === "nothingHereYet_none"
         );
 
         setStackDataLoaded(true);
@@ -349,7 +350,7 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
   }
 
   return (
-    <div class={styles.stackSlider}>
+    <div style={styles.stackSlider}>
       <div
         class={styles.stackHandle}
         ref={(el) => (thisStack = el)}

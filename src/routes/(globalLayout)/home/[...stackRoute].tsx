@@ -65,7 +65,7 @@ export default function stackRoute() {
       return `${currentStackName[0]}/${currentStackName[1]}`;
     };
 
-    const foundStack = stackMap().filter(
+    const foundStack = stackMap().stackList.filter(
       (stackMapEntry: stackMapEntryInput) =>
         stackMapEntry.name === currentStack()
     );
