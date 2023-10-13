@@ -121,13 +121,12 @@ export default function stackRoute() {
 
   return (
     <>
-      <div class={styles.textCont}>
+      <Show when={pageBuilding() !== "loaded"} fallback={<></>}>
+        <div>{pageBuilding()}</div>
+      </Show>
+      <A href={`${params.stackRoute}/nextRoute`}>Navigate To Next</A>
+      <div class={styles.shelfSceneContainer}>
         <div>
-          <Show when={pageBuilding() !== "loaded"} fallback={<></>}>
-            <div>{pageBuilding()}</div>
-          </Show>
-          <A href={`${params.stackRoute}/nextRoute`}>Navigate To Next</A>
-          <div>{location.pathname}</div>
           <For each={stackList()} fallback={<div>No Array</div>}>
             {(item) => <div>{item()}</div>}
           </For>

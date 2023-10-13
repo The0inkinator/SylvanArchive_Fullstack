@@ -11,3 +11,10 @@
   color: red;
   font-size: 2rem;
 }
+
+.shelfSceneContainer {
+  width: 100vw;
+  overflow-x: hidden;
+  /* display: flex;
+  flex-direction: column; */
+}
