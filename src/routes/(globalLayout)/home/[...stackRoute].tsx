@@ -3,12 +3,19 @@ import { useParams } from "@solidjs/router";
 import { createEffect, createSignal, onMount, Switch, For } from "solid-js";
 import MiniStack from "../../../testComponents/miniStack";
 import { A, useIsRouting, useLocation } from "@solidjs/router";
+import buildStackMap from "../../../components/stackRouteHelpers/buildStackMap";
+import { useStackMapContext } from "../../../context/StackMapContext";
 
 export default function stackRoute() {
   const params = useParams();
   const location = useLocation();
   const [pastRoute, setPastRoute] = createSignal<string>(params.stackRoute);
   const [miniStackList, setMiniStackList] = createSignal<any[]>([]);
+  const [stackMap]: any = useStackMapContext();
+
+  createEffect(async () => {
+    console.log(await buildStackMap());
+  });
 
   function addStacks() {
     const currentRoute = params.stackRoute.split("/");
