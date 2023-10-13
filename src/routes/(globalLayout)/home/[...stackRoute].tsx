@@ -10,26 +10,6 @@ export default function stackRoute() {
   const [pastRoute, setPastRoute] = createSignal<string>(params.stackRoute);
   const [miniStackList, setMiniStackList] = createSignal<any[]>([]);
 
-  // function updateStackList() {
-  //   const route = params.stackRoute.split("/");
-  //   const newStackArray = route.map((routePoint) => {
-  //     return <MiniStack stackName={routePoint} />;
-  //   });
-
-  //   if (newStackArray !== miniStackList()) {
-  //     const newStacks = newStackArray.filter(
-  //       (item) => !miniStackList().includes(item)
-  //     );
-
-  //     console.log("new stacks", newStacks);
-  //     setPastRoute(params.stackRoute);
-  //     return newStacks;
-  //   } else {
-  //     setPastRoute(params.stackRoute);
-  //     return [];
-  //   }
-  // }
-
   function addStacks() {
     const currentRoute = params.stackRoute.split("/");
     const newStackNames = currentRoute.slice(miniStackList().length);
