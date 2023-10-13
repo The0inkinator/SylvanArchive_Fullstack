@@ -8,19 +8,16 @@ import {
   For,
   Show,
 } from "solid-js";
-import MiniStack from "../../../testComponents/miniStack";
 import { A, useIsRouting, useLocation } from "@solidjs/router";
 import buildStackMap from "../../../components/stackRouteHelpers/buildStackMap";
 import { useStackMapContext } from "../../../context/StackMapContext";
 import Stack from "../../../components/shelfSystem/stack/Stack";
 import { useStackStateContext } from "../../../context/StackStateContext";
-import { redirect } from "solid-start";
 
 export default function stackRoute() {
   const params = useParams();
   const location = useLocation();
   const [pastRoute, setPastRoute] = createSignal<string>(params.stackRoute);
-  const [miniStackList, setMiniStackList] = createSignal<any[]>([]);
   const [stackList, setStackList] = createSignal<any[]>([]);
   const [pageBuilding, setPageBuilding] = createSignal<
     "checkingMap" | "populatingStacks" | "loaded"
@@ -33,9 +30,15 @@ export default function stackRoute() {
 
   function addStacks() {
     const currentRoute = params.stackRoute.split("/");
-    const newStackNames = currentRoute.slice(miniStackList().length);
-    const newStacksArray = newStackNames.map((name) => () => {
-      return <MiniStack stackName={name} />;
+    const newStackNames = currentRoute.slice(stackList().length);
+    const convertedStackNames = newStackNames.map((stackName, index) => {
+      console.log(currentRoute);
+      return `${currentRoute[currentRoute.length - 2]}/${stackName}`;
+    });
+    console.log(convertedStackNames);
+    const newStacksArray = convertedStackNames.map((name, index) => () => {
+      const stackNum = stackList.length + index + 1;
+      return <Stack stackID={`${name}`} stackNum={stackNum} />;
     });
     return newStacksArray;
   }
@@ -106,11 +109,11 @@ export default function stackRoute() {
 
   createEffect(() => {
     if (pastRoute() < params.stackRoute) {
-      setMiniStackList((prevList) => [...prevList, addStacks()]);
+      setStackList((prevList) => [...prevList, addStacks()]);
       setPastRoute(params.stackRoute);
     } else if (pastRoute() > params.stackRoute) {
-      const newMiniStackList = miniStackList().slice(0, -removeStacks());
-      setMiniStackList(newMiniStackList);
+      const newStackList = stackList().slice(0, -removeStacks());
+      setStackList(newStackList);
 
       setPastRoute(params.stackRoute);
     }
