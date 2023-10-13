@@ -20,6 +20,7 @@ import { useBinderStateContext } from "../../../context/BinderStateContext";
 import { useStackStateContext } from "../../../context/StackStateContext";
 import { useStackMapContext } from "~/context/StackMapContext";
 import { useNavigate } from "solid-start";
+import { useLocation } from "@solidjs/router";
 
 //TYPING
 interface CardFetcherInputs {
@@ -75,6 +76,7 @@ export default function Binder({
   >(false);
   const [parentActive, setParentActive] = createSignal<boolean>(true);
   const linkTo = useNavigate();
+  const currentLocation = useLocation();
 
   //Ref Variables
   let binderContainer: HTMLDivElement | null = null;
