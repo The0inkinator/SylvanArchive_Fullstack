@@ -1,23 +1,34 @@
 import styles from "../../../layouts/testStyles.module.css";
 import { useParams } from "@solidjs/router";
-import { createEffect, createSignal, onMount, Switch, For } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  onMount,
+  Switch,
+  For,
+  Show,
+} from "solid-js";
 import MiniStack from "../../../testComponents/miniStack";
 import { A, useIsRouting, useLocation } from "@solidjs/router";
 import buildStackMap from "../../../components/stackRouteHelpers/buildStackMap";
-import findStack from "../../../components/stackRouteHelpers/findStack";
-import findStack2 from "../../../components/stackRouteHelpers/findStack2";
 import { useStackMapContext } from "../../../context/StackMapContext";
+import Stack from "../../../components/shelfSystem/stack/Stack";
+import { useStackStateContext } from "../../../context/StackStateContext";
 
 export default function stackRoute() {
   const params = useParams();
   const location = useLocation();
   const [pastRoute, setPastRoute] = createSignal<string>(params.stackRoute);
   const [miniStackList, setMiniStackList] = createSignal<any[]>([]);
-  const [stackMap]: any = useStackMapContext();
-
-  async function test() {
-    console.log(await findStack({ stackToFind: `${params.stackRoute}` }));
-  }
+  const [stackList, setStackList] = createSignal<any[]>([]);
+  const [pageBuilding, setPageBuilding] = createSignal<
+    "checkingMap" | "populatingStacks" | "loaded"
+  >("checkingMap");
+  const [stackMap, { makeStackMap }]: any = useStackMapContext();
+  const [
+    stackState,
+    { loadStack, closeXStacks, addToStackCount, updateStackMapLoadStatus },
+  ]: any = useStackStateContext();
 
   function addStacks() {
     const currentRoute = params.stackRoute.split("/");
@@ -35,12 +46,38 @@ export default function stackRoute() {
     return numberToRemove;
   }
 
-  onMount(() => {
-    const currentRoute = params.stackRoute.split("/");
-    const newStackArray = currentRoute.map((routePoint) => {
-      return <MiniStack stackName={routePoint} />;
-    });
+  async function checkStackMap() {
+    if (!stackMap()) {
+      await buildStackMap();
+    }
+  }
 
+  async function findStack(stackToFind: string) {
+    interface stackMapEntryInput {
+      name: string;
+    }
+
+    const fullPath = `home/${stackToFind}`;
+    const currentStack = () => {
+      const eachStack = fullPath.split("/");
+      const extraPath = eachStack.length - 2;
+      const currentStackName = eachStack.slice(extraPath);
+      return `${currentStackName[0]}/${currentStackName[1]}`;
+    };
+
+    const foundStack = stackMap().filter(
+      (stackMapEntry: stackMapEntryInput) =>
+        stackMapEntry.name === currentStack()
+    );
+    return foundStack[0];
+  }
+
+  onMount(async () => {
+    await checkStackMap();
+    updateStackMapLoadStatus(true);
+    setPageBuilding("populatingStacks");
+
+    const currentRoute = params.stackRoute.split("/");
     const currentStackNameList = () => {
       return currentRoute.map((routePoint, index) => {
         if (currentRoute[index - 1]) {
@@ -50,28 +87,26 @@ export default function stackRoute() {
         }
       });
     };
-
     const startingStackList = async () => {
       return await Promise.all(
         currentStackNameList().map(async (stackName) => {
-          return await findStack({ stackToFind: `${stackName}` });
+          return await findStack(`${stackName}`);
         })
       );
     };
 
-    (async () => {
-      // console.log(await startingStackList());
-      console.log(await findStack2({ stackToFind: "lands/fixingLands" }));
-      console.log(await findStack2({ stackToFind: "lands/fixingLands" }));
-    })();
-
-    setMiniStackList(newStackArray);
+    const stackObjectList = await startingStackList();
+    const stackElementArray = stackObjectList.map((stackObject, index) => {
+      return () => {
+        return <Stack stackID={stackObject.name} stackNum={index} />;
+      };
+    });
+    setStackList(stackElementArray);
   });
 
   createEffect(() => {
     if (pastRoute() < params.stackRoute) {
       setMiniStackList((prevList) => [...prevList, addStacks()]);
-      test();
       setPastRoute(params.stackRoute);
     } else if (pastRoute() > params.stackRoute) {
       const newMiniStackList = miniStackList().slice(0, -removeStacks());
@@ -85,9 +120,12 @@ export default function stackRoute() {
     <>
       <div class={styles.textCont}>
         <div>
+          <Show when={pageBuilding() !== "loaded"} fallback={<></>}>
+            <div>{pageBuilding()}</div>
+          </Show>
           <A href={`${params.stackRoute}/nextRoute`}>Navigate To Next</A>
           <div>{location.pathname}</div>
-          <For each={miniStackList()} fallback={<div>No Array</div>}>
+          <For each={stackList()} fallback={<div>No Array</div>}>
             {(item) => <div>{item()}</div>}
           </For>
         </div>

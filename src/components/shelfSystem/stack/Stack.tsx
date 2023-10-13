@@ -62,15 +62,14 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
   onMount(() => {
     createEffect(() => {
       if (stackState().stackMapLoaded && !stackDataLoaded()) {
-        let childrenOfThisStack = stackMap().stackList.filter(
-          (stack: any) => stack.name === stackID
-        );
-        let loadedBinderList = stackMap().binderList.filter((binder: any) =>
-          childrenOfThisStack[0].children.includes(binder.name)
+        let childrenOfThisStack = stackMap().filter(
+          (stack: any) => stack.parent === stackID
         );
 
-        const errorBinder = stackMap().binderList.filter(
-          (binder: any) => binder.name === "nothingHereYet_none"
+        let loadedBinderList = childrenOfThisStack;
+
+        const errorBinder = stackMap().filter(
+          (binder: any) => binder.name === "emptySlot"
         );
 
         setStackDataLoaded(true);
@@ -350,50 +349,52 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
   }
 
   return (
-    <div
-      class={styles.stackHandle}
-      ref={(el) => (thisStack = el)}
-      onmouseenter={() => {
-        stackHoveredForCursor = true;
-        if (stackDragging() !== "dragging") {
-          document.body.style.cursor = "grab";
-        }
-      }}
-      onclick={() => {}}
-      onmouseleave={() => {
-        stackHoveredForCursor = false;
-        if (stackDragging() === "still") {
-          document.body.style.cursor = "auto";
-        }
-      }}
-      style={{
-        //This is the property that handles the rendering of the stack position
-        left: `${collisionCheck(stackPosition())}px`,
-        //Stackwidth is set on mount and updated on resize
-        width: `${stackWidth()}px`,
-        // opacity: thisStackActive() ? "100%" : "50%",
-      }}
-    >
-      <div class={styles.stackContainer} ref={(el) => (binderContainer = el)}>
-        <For
-          each={binderList()}
-          fallback={<div class={styles.loadingListText}></div>}
-        >
-          {(binder: any, index: any) => {
-            // console.log(`binders to load`, binder.name);
-            return (
-              <Binder
-                title={binder.displayName}
-                binderName={binder.name}
-                displayArt={binder.displayArt}
-                bgCards={binder.bgArts}
-                binderNum={index() + 1}
-                binderParentElement={thisStack}
-                binderChildType={binder.childType}
-              />
-            );
-          }}
-        </For>
+    <div class={styles.stackSlider}>
+      <div
+        class={styles.stackHandle}
+        ref={(el) => (thisStack = el)}
+        onmouseenter={() => {
+          stackHoveredForCursor = true;
+          if (stackDragging() !== "dragging") {
+            document.body.style.cursor = "grab";
+          }
+        }}
+        onclick={() => {}}
+        onmouseleave={() => {
+          stackHoveredForCursor = false;
+          if (stackDragging() === "still") {
+            document.body.style.cursor = "auto";
+          }
+        }}
+        style={{
+          //This is the property that handles the rendering of the stack position
+          left: `${collisionCheck(stackPosition())}px`,
+          //Stackwidth is set on mount and updated on resize
+          width: `${stackWidth()}px`,
+          // opacity: thisStackActive() ? "100%" : "50%",
+        }}
+      >
+        <div class={styles.stackContainer} ref={(el) => (binderContainer = el)}>
+          <For
+            each={binderList()}
+            fallback={<div class={styles.loadingListText}></div>}
+          >
+            {(binder: any, index: any) => {
+              // console.log(`binders to load`, binder.name);
+              return (
+                <Binder
+                  title={binder.displayName}
+                  binderName={binder.name}
+                  displayArt={binder.displayArt}
+                  bgCards={binder.bgArts}
+                  binderNum={index() + 1}
+                  binderParentElement={thisStack}
+                  binderChildType={binder.childType}
+                />
+              );
+            }}
+          </For>
+        </div>
       </div>
     </div>
   );
