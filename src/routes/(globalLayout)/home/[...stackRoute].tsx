@@ -74,7 +74,6 @@ export default function stackRoute() {
 
   onMount(async () => {
     await checkStackMap();
-    updateStackMapLoadStatus(true);
     setPageBuilding("populatingStacks");
 
     const currentRoute = params.stackRoute.split("/");

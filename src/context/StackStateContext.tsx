@@ -42,6 +42,12 @@ export function StackStateProvider(props: any) {
             stackCount: newStackCount,
           }));
         },
+        setStackCount(inputNumber: number) {
+          setStackState((prevState) => ({
+            ...prevState,
+            stackCount: inputNumber,
+          }));
+        },
         closeXStacks(inputNumber: number) {
           setStackState((prevState) => ({
             ...prevState,

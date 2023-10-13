@@ -26,8 +26,10 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
     binderState,
     { setSelectedBinder, setHoveredBinder, setWaitingToLoad },
   ]: any = useBinderStateContext();
-  const [stackState, { changeActiveStack, setHoveredStack }]: any =
-    useStackStateContext();
+  const [
+    stackState,
+    { changeActiveStack, setHoveredStack, setStackCount },
+  ]: any = useStackStateContext();
   const [stackMap]: any = useStackMapContext();
 
   //State
@@ -143,6 +145,8 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
         }
       }
     });
+
+    setStackCount(stackNum);
 
     window.addEventListener("scroll", handleScroll);
     if (thisStack) thisStack.addEventListener("mousedown", handleMouseDown);

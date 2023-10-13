@@ -207,6 +207,9 @@ export default function Binder({
           setWaitingToLoad(false);
           if (binderOutput.outputType === "newStack") {
             loadStack(binderOutput.outputName);
+            const newStackName = binderOutput.outputName.split("/")[1];
+            const newRoute = `${currentLocation.pathname}/${newStackName}`;
+            linkTo(`${newRoute}`);
           } else if (binderOutput.outputType === "cardList") {
             linkTo(`/cardLists/${binderOutput.outputName}`);
           } else {
