@@ -210,7 +210,18 @@ export default function Binder({
           if (binderOutput.outputType === "newStack") {
             loadStack(binderOutput.outputName);
             const newStackName = binderOutput.outputName.split("/")[1];
-            const newRoute = `${currentLocation.pathname}/${newStackName}`;
+            const adjustedCurrentRoute = () => {
+              function slashCheck(input: string) {
+                return input.charAt(input.length - 1) === "/";
+              }
+              if (slashCheck(currentLocation.pathname)) {
+                return currentLocation.pathname.slice(0, -1);
+              } else {
+                return currentLocation.pathname;
+              }
+            };
+            const newRoute = `${adjustedCurrentRoute()}/${newStackName}`;
+
             linkTo(`${newRoute}`);
           } else if (binderOutput.outputType === "cardList") {
             linkTo(`/cardLists/${binderOutput.outputName}`);

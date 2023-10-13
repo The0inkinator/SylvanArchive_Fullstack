@@ -14,6 +14,7 @@ import buildStackMap from "../../../components/stackRouteHelpers/buildStackMap";
 import { useStackMapContext } from "../../../context/StackMapContext";
 import Stack from "../../../components/shelfSystem/stack/Stack";
 import { useStackStateContext } from "../../../context/StackStateContext";
+import { redirect } from "solid-start";
 
 export default function stackRoute() {
   const params = useParams();
