@@ -9,7 +9,6 @@ import {
   Show,
 } from "solid-js";
 import { A, useIsRouting, useLocation } from "@solidjs/router";
-import buildStackMap from "../../../components/stackRouteHelpers/buildStackMap";
 import { useStackMapContext } from "../../../context/StackMapContext";
 import Stack from "../../../components/shelfSystem/stack/Stack";
 import { useStackStateContext } from "../../../context/StackStateContext";
@@ -33,7 +32,6 @@ export default function stackRoute() {
   const [stackDragging, { dragToStill }]: any = useStackDraggingContext();
 
   onMount(async () => {
-    // await buildStackMap();
     const stackMapData = await fetch("/api/tables/newBinders2");
     const convertedStackMapData = await stackMapData.json();
     makeStackMap(convertedStackMapData);
