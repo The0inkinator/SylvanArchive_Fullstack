@@ -27,19 +27,25 @@ export default function stackRoute() {
   const [stackMap, { makeStackMap }]: any = useStackMapContext();
   const [
     stackState,
-    { loadStack, closeXStacks, setStackCount, updateStackMapLoadStatus },
+    {
+      loadStack,
+      closeXStacks,
+      setStackCount,
+      updateStackMapLoadStatus,
+      setStacksPopulated,
+    },
   ]: any = useStackStateContext();
   const [stackDragging, { dragToStill }]: any = useStackDraggingContext();
 
   onMount(async () => {
-    const stackMapData = await fetch("/api/tables/newBinders2");
-    const convertedStackMapData = await stackMapData.json();
-    makeStackMap(convertedStackMapData);
+    const binderListData = await fetch("/api/tables/newBinders2");
+    const binderListJson = await binderListData.json();
+    makeStackMap(binderListJson);
     updateStackMapLoadStatus(true);
     setPageBuilding("populatingStacks");
 
     const currentRoute = params.stackRoute.split("/");
-    const currentStackNameList = () => {
+    const allStackNames = () => {
       return currentRoute.map((routePoint, index) => {
         if (currentRoute[index - 1]) {
           return `${currentRoute[index - 1]}/${routePoint}`;
@@ -48,48 +54,25 @@ export default function stackRoute() {
         }
       });
     };
-    const startingStackList = async () => {
+    const verifyStacks = async () => {
       return await Promise.all(
-        currentStackNameList().map(async (stackName) => {
+        allStackNames().map(async (stackName) => {
           return await findStack(`${stackName}`);
         })
       );
     };
 
-    const stackObjectList = await startingStackList();
-    const stackElementArray = stackObjectList.map((stackObject, index) => {
+    const verifiedStackList = await verifyStacks();
+    const builtStackList = verifiedStackList.map((stackObject, index) => {
       return () => {
         return <Stack stackID={stackObject.name} stackNum={index + 1} />;
       };
     });
-    setStackCount(stackElementArray.length);
-    setStackList(stackElementArray);
+    setStackCount(builtStackList.length);
+    setStackList(builtStackList);
+    setStacksPopulated(true);
     setMargins();
   });
-
-  function addStacks() {
-    const currentRoute = params.stackRoute.split("/");
-    const newStackNames = currentRoute.slice(stackList().length);
-    const convertedStackNames = newStackNames.map((stackName, index) => {
-      return `${currentRoute[currentRoute.length - 2]}/${stackName}`;
-    });
-
-    const newStacksArray = convertedStackNames.map((name, index) => () => {
-      const stackNum = stackList().length + index;
-      return <Stack stackID={`${name}`} stackNum={stackNum} />;
-    });
-
-    setStackCount(stackList().length + newStacksArray.length);
-    return newStacksArray;
-  }
-
-  function removeStacks() {
-    const oldRouteLength = pastRoute().split("/");
-    const currentRouteLength = params.stackRoute.split("/");
-    const numberToRemove = oldRouteLength.length - currentRouteLength.length;
-    dragToStill();
-    return numberToRemove;
-  }
 
   async function findStack(stackToFind: string) {
     interface stackMapEntryInput {
@@ -121,6 +104,30 @@ export default function stackRoute() {
         shelfSceneContainer.style.paddingBottom = `${topMarginCalc}px`;
       }
     }, 1);
+  }
+
+  function addStacks() {
+    const currentRoute = params.stackRoute.split("/");
+    const newStackNames = currentRoute.slice(stackList().length);
+    const convertedStackNames = newStackNames.map((stackName, index) => {
+      return `${currentRoute[currentRoute.length - 2]}/${stackName}`;
+    });
+
+    const newStacksArray = convertedStackNames.map((name, index) => () => {
+      const stackNum = stackList().length + index;
+      return <Stack stackID={`${name}`} stackNum={stackNum} />;
+    });
+
+    setStackCount(stackList().length + newStacksArray.length);
+    return newStacksArray;
+  }
+
+  function removeStacks() {
+    const oldRouteLength = pastRoute().split("/");
+    const currentRouteLength = params.stackRoute.split("/");
+    const numberToRemove = oldRouteLength.length - currentRouteLength.length;
+    dragToStill();
+    return numberToRemove;
   }
 
   createEffect(() => {

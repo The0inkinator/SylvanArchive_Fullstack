@@ -6,6 +6,7 @@ interface stackInfo {
   activeStack: any;
   stackCount: number;
   stackMapLoaded: boolean;
+  stacksPopulated: boolean;
   hoveredStack: number;
 }
 
@@ -14,6 +15,7 @@ export function StackStateProvider(props: any) {
       activeStack: null,
       stackCount: 1,
       stackMapLoaded: false,
+      stacksPopulated: false,
       hoveredStack: 1,
     }),
     stackStateList = [
@@ -35,6 +37,12 @@ export function StackStateProvider(props: any) {
           setStackState((prevState) => ({
             ...prevState,
             stackMapLoaded: input,
+          }));
+        },
+        setStacksPopulated(input: boolean) {
+          setStackState((prevState) => ({
+            ...prevState,
+            stacksPopulated: input,
           }));
         },
         setHoveredStack(inputNumber: number) {
