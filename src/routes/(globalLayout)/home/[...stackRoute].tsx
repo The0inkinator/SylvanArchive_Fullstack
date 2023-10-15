@@ -13,10 +13,13 @@ import buildStackMap from "../../../components/stackRouteHelpers/buildStackMap";
 import { useStackMapContext } from "../../../context/StackMapContext";
 import Stack from "../../../components/shelfSystem/stack/Stack";
 import { useStackStateContext } from "../../../context/StackStateContext";
+import { useStackDraggingContext } from "../../../context/StackDraggingContext";
 
 export default function stackRoute() {
   const params = useParams();
   const location = useLocation();
+  let shelfSceneContainer: HTMLDivElement | null = null;
+  let shelfHeight: number;
   const [pastRoute, setPastRoute] = createSignal<string>(params.stackRoute);
   const [stackList, setStackList] = createSignal<any[]>([]);
   const [pageBuilding, setPageBuilding] = createSignal<
@@ -25,21 +28,23 @@ export default function stackRoute() {
   const [stackMap, { makeStackMap }]: any = useStackMapContext();
   const [
     stackState,
-    { loadStack, closeXStacks, addToStackCount, updateStackMapLoadStatus },
+    { loadStack, closeXStacks, setStackCount, updateStackMapLoadStatus },
   ]: any = useStackStateContext();
+  const [stackDragging, { dragToStill }]: any = useStackDraggingContext();
 
   function addStacks() {
     const currentRoute = params.stackRoute.split("/");
     const newStackNames = currentRoute.slice(stackList().length);
     const convertedStackNames = newStackNames.map((stackName, index) => {
-      console.log(currentRoute);
       return `${currentRoute[currentRoute.length - 2]}/${stackName}`;
     });
-    console.log(convertedStackNames);
+
     const newStacksArray = convertedStackNames.map((name, index) => () => {
-      const stackNum = stackList.length + index + 1;
+      const stackNum = stackList().length + index;
       return <Stack stackID={`${name}`} stackNum={stackNum} />;
     });
+
+    setStackCount(stackList().length + newStacksArray.length);
     return newStacksArray;
   }
 
@@ -47,6 +52,7 @@ export default function stackRoute() {
     const oldRouteLength = pastRoute().split("/");
     const currentRouteLength = params.stackRoute.split("/");
     const numberToRemove = oldRouteLength.length - currentRouteLength.length;
+    dragToStill();
     return numberToRemove;
   }
 
@@ -101,11 +107,25 @@ export default function stackRoute() {
     const stackObjectList = await startingStackList();
     const stackElementArray = stackObjectList.map((stackObject, index) => {
       return () => {
-        return <Stack stackID={stackObject.name} stackNum={index} />;
+        return <Stack stackID={stackObject.name} stackNum={index + 1} />;
       };
     });
+    setStackCount(stackElementArray.length);
     setStackList(stackElementArray);
+    setMargins();
   });
+
+  function setMargins() {
+    setTimeout(() => {
+      if (shelfSceneContainer) {
+        shelfHeight =
+          shelfSceneContainer.children[0].getBoundingClientRect().height;
+        const topMarginCalc: number = (window.innerHeight - shelfHeight) / 2;
+        shelfSceneContainer.style.paddingTop = `${topMarginCalc}px`;
+        shelfSceneContainer.style.paddingBottom = `${topMarginCalc}px`;
+      }
+    }, 1);
+  }
 
   createEffect(() => {
     if (pastRoute() < params.stackRoute) {
@@ -114,7 +134,6 @@ export default function stackRoute() {
     } else if (pastRoute() > params.stackRoute) {
       const newStackList = stackList().slice(0, -removeStacks());
       setStackList(newStackList);
-
       setPastRoute(params.stackRoute);
     }
   });
@@ -125,12 +144,13 @@ export default function stackRoute() {
         <div>{pageBuilding()}</div>
       </Show>
       <A href={`${params.stackRoute}/nextRoute`}>Navigate To Next</A>
-      <div class={styles.shelfSceneContainer}>
-        <div>
-          <For each={stackList()} fallback={<div>No Array</div>}>
-            {(item) => <div>{item()}</div>}
-          </For>
-        </div>
+      <div
+        class={styles.shelfSceneContainer}
+        ref={(el) => (shelfSceneContainer = el)}
+      >
+        <For each={stackList()} fallback={<div>No Array</div>}>
+          {(item) => <div>{item()}</div>}
+        </For>
       </div>
     </>
   );

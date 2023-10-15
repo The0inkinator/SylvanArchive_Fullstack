@@ -4,9 +4,7 @@ const StackStateContext = createContext();
 
 interface stackInfo {
   activeStack: any;
-  loadingStack: string | "none";
   stackCount: number;
-  stacksToClose: number;
   stackMapLoaded: boolean;
   hoveredStack: number;
 }
@@ -14,9 +12,7 @@ interface stackInfo {
 export function StackStateProvider(props: any) {
   const [stackState, setStackState] = createSignal<stackInfo>({
       activeStack: null,
-      loadingStack: "none",
       stackCount: 1,
-      stacksToClose: 0,
       stackMapLoaded: false,
       hoveredStack: 1,
     }),
@@ -29,29 +25,10 @@ export function StackStateProvider(props: any) {
             activeStack: input,
           }));
         },
-        loadStack(inputPath: string | "none") {
-          setStackState((prevState) => ({
-            ...prevState,
-            loadingStack: inputPath,
-          }));
-        },
-        addToStackCount(inputNumber: number) {
-          const newStackCount = stackState().stackCount + inputNumber;
-          setStackState((prevState) => ({
-            ...prevState,
-            stackCount: newStackCount,
-          }));
-        },
         setStackCount(inputNumber: number) {
           setStackState((prevState) => ({
             ...prevState,
             stackCount: inputNumber,
-          }));
-        },
-        closeXStacks(inputNumber: number) {
-          setStackState((prevState) => ({
-            ...prevState,
-            stacksToClose: inputNumber,
           }));
         },
         updateStackMapLoadStatus(input: boolean) {

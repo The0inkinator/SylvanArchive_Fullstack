@@ -5,7 +5,7 @@ import { useStackDraggingContext } from "../../../context/StackDraggingContext";
 import { useBinderStateContext } from "../../../context/BinderStateContext";
 import { useStackStateContext } from "../../../context/StackStateContext";
 import { useStackMapContext } from "../../../context/StackMapContext";
-
+import { useNavigate } from "solid-start";
 interface StackInputs {
   stackID: string;
   stackNum: number;
@@ -60,6 +60,8 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
   //Slide Function Variables
   let slideRunning: boolean = false;
   let distanceToSlide: number = 0;
+
+  const linkTo = useNavigate();
 
   onMount(() => {
     createEffect(() => {
@@ -138,6 +140,9 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
       }
     });
 
+    console.log("stack number is:", stackNum);
+    console.log("stack count is:", stackState().stackCount);
+
     createEffect(() => {
       if (thisStack) {
         if (stackState().activeStack !== thisStack) {
@@ -146,7 +151,7 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
       }
     });
 
-    setStackCount(stackNum);
+    // setStackCount(stackNum);
 
     window.addEventListener("scroll", handleScroll);
     if (thisStack) thisStack.addEventListener("mousedown", handleMouseDown);
@@ -321,6 +326,7 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
           setTimeout(loop, 1);
         } else {
           dragToStill();
+          linkTo(binderState().link);
           slideRunning = false;
         }
       }
@@ -354,7 +360,7 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
   }
 
   return (
-    <div style={styles.stackSlider}>
+    <div class={styles.stackSlider}>
       <div
         class={styles.stackHandle}
         ref={(el) => (thisStack = el)}

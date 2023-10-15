@@ -57,7 +57,7 @@ export default function Binder({
   //Context States
   const [
     binderState,
-    { setSelectedBinder, setHoveredBinder, setWaitingToLoad },
+    { setSelectedBinder, setHoveredBinder, setWaitingToLoad, setBinderLink },
   ]: any = useBinderStateContext();
   const [stackState, { changeActiveStack, loadStack }]: any =
     useStackStateContext();
@@ -196,50 +196,29 @@ export default function Binder({
   });
 
   const handleDoubleClick = (event: MouseEvent) => {
-    let loadStackRunning: boolean = false;
-    function loadStackFromBinder() {
-      let timer: number = 2000;
-      loadStackRunning = true;
-      function loop() {
-        if (
-          binderState().waitingToLoad &&
-          stackDragging() !== "locked" &&
-          binderState().selectedBinder === binderNum
-        ) {
-          setWaitingToLoad(false);
-          if (binderOutput.outputType === "newStack") {
-            loadStack(binderOutput.outputName);
-            const newStackName = binderOutput.outputName.split("/")[1];
-            const adjustedCurrentRoute = () => {
-              function slashCheck(input: string) {
-                return input.charAt(input.length - 1) === "/";
-              }
-              if (slashCheck(currentLocation.pathname)) {
-                return currentLocation.pathname.slice(0, -1);
-              } else {
-                return currentLocation.pathname;
-              }
-            };
-            const newRoute = `${adjustedCurrentRoute()}/${newStackName}`;
-
-            linkTo(`${newRoute}`);
-          } else if (binderOutput.outputType === "cardList") {
-            linkTo(`/cardLists/${binderOutput.outputName}`);
-          } else {
-            console.log("endpoint");
-          }
-        } else {
-          if (timer > 0) {
-            timer = timer - 1;
-            setTimeout(loop, 1);
-          } else console.log("loopEnded");
-        }
-      }
-      loop();
-    }
     if (stackDragging() === "still" && parentActive()) {
       setSelectedBinder(binderNum);
-      if (!loadStackRunning) loadStackFromBinder();
+      if (binderOutput.outputType === "newStack") {
+        const newStackName = binderOutput.outputName.split("/")[1];
+        const adjustedCurrentRoute = () => {
+          function slashCheck(input: string) {
+            return input.charAt(input.length - 1) === "/";
+          }
+          if (slashCheck(currentLocation.pathname)) {
+            return currentLocation.pathname.slice(0, -1);
+          } else {
+            return currentLocation.pathname;
+          }
+        };
+        const newRoute = `${adjustedCurrentRoute()}/${newStackName}`;
+
+        // linkTo(`${newRoute}`);
+        setBinderLink(`${newRoute}`);
+      } else if (binderOutput.outputType === "cardList") {
+        setBinderLink(`/cardLists/${binderOutput.outputName}`);
+      } else {
+        console.log("endpoint");
+      }
     }
   };
 
