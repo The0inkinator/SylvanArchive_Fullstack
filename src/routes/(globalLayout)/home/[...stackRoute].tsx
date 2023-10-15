@@ -90,15 +90,13 @@ export default function stackRoute() {
   }
 
   function setMargins() {
-    setTimeout(() => {
-      if (shelfSceneContainer) {
-        shelfHeight =
-          shelfSceneContainer.children[0].getBoundingClientRect().height;
-        const topMarginCalc: number = (window.innerHeight - shelfHeight) / 2;
-        shelfSceneContainer.style.paddingTop = `${topMarginCalc}px`;
-        shelfSceneContainer.style.paddingBottom = `${topMarginCalc}px`;
-      }
-    }, 1);
+    if (shelfSceneContainer) {
+      shelfHeight =
+        shelfSceneContainer.children[0].getBoundingClientRect().height;
+      const topMarginCalc: number = (window.innerHeight - shelfHeight) / 2;
+      shelfSceneContainer.style.paddingTop = `${topMarginCalc}px`;
+      shelfSceneContainer.style.paddingBottom = `${topMarginCalc}px`;
+    }
   }
 
   function addStacks() {
@@ -138,10 +136,9 @@ export default function stackRoute() {
 
   return (
     <>
-      <Show when={pageBuilding() !== "loaded"} fallback={<></>}>
+      {/* <Show when={pageBuilding() !== "loaded"} fallback={<></>}>
         <div>{pageBuilding()}</div>
-      </Show>
-      <A href={`${params.stackRoute}/nextRoute`}>Navigate To Next</A>
+      </Show> */}
       <div
         class={styles.shelfSceneContainer}
         ref={(el) => (shelfSceneContainer = el)}
