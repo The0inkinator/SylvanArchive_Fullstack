@@ -35,8 +35,9 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
   //State
   const [stackWidth, setStackWidth] = createSignal<number>(0);
   const [stackPosition, setStackPosition] = createSignal<number>(0);
-  const [stackDataLoaded, setStackDataLoaded] = createSignal<boolean>(false);
+  const [localStackLoaded, setLocalStackLoaded] = createSignal<boolean>(false);
   const [binderList, setBinderList] = createSignal<any[]>([]);
+  const [scrolledTo, setScrolledTo] = createSignal<boolean>(false);
 
   //Ref Variables
   let thisStack: HTMLDivElement | null = null;
@@ -65,19 +66,16 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
 
   onMount(() => {
     createEffect(() => {
-      if (stackState().stackMapLoaded && !stackDataLoaded()) {
+      if (stackState().stackMapLoaded && !localStackLoaded()) {
         let loadedBinderList = stackMap().filter(
           (stack: any) => stack.parent === stackID
         );
-        // let loadedBinderList = stackMap().binderList.filter((binder: any) =>
-        //   childrenOfThisStack[0].children.includes(binder.name)
-        // );
 
         const errorBinder = stackMap().filter(
           (binder: any) => binder.name === "emptyStack"
         );
 
-        setStackDataLoaded(true);
+        setLocalStackLoaded(true);
 
         if (loadedBinderList.length > 0) {
           setBinderList(loadedBinderList);
@@ -132,16 +130,12 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
           changeActiveStack(thisStack);
           setSelectedBinder(0);
           setHoveredBinder(0);
-          thisStack.scrollIntoView({
-            block: "center",
-            behavior: "smooth",
-          });
         }
       }
     });
 
-    console.log("stack number is:", stackNum);
-    console.log("stack count is:", stackState().stackCount);
+    // console.log("stack number is:", stackNum);
+    // console.log("stack count is:", stackState().stackCount);
 
     createEffect(() => {
       if (thisStack) {
@@ -151,7 +145,17 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
       }
     });
 
-    // setStackCount(stackNum);
+    createEffect(() => {
+      if (localStackLoaded() && !scrolledTo() && thisStackActive) {
+        setTimeout(() => {
+          if (stackState().hoveredStack !== stackNum) {
+            if (thisStack) {
+              thisStack.scrollIntoView({ block: "center", behavior: "smooth" });
+            }
+          }
+        }, 100);
+      }
+    });
 
     window.addEventListener("scroll", handleScroll);
     if (thisStack) thisStack.addEventListener("mousedown", handleMouseDown);
@@ -326,7 +330,8 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
           setTimeout(loop, 1);
         } else {
           dragToStill();
-          linkTo(binderState().link);
+          linkTo(binderState().link, { scroll: false });
+
           slideRunning = false;
         }
       }
@@ -382,7 +387,6 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
           left: `${collisionCheck(stackPosition())}px`,
           //Stackwidth is set on mount and updated on resize
           width: `${stackWidth()}px`,
-          // opacity: thisStackActive() ? "100%" : "50%",
         }}
       >
         <div class={styles.stackContainer} ref={(el) => (binderContainer = el)}>
