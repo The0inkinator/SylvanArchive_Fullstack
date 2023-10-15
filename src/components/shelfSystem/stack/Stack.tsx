@@ -26,10 +26,8 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
     binderState,
     { setSelectedBinder, setHoveredBinder, setWaitingToLoad },
   ]: any = useBinderStateContext();
-  const [
-    stackState,
-    { changeActiveStack, setHoveredStack, setStackCount },
-  ]: any = useStackStateContext();
+  const [stackState, { changeActiveStack, setHoveredStack }]: any =
+    useStackStateContext();
   const [stackMap]: any = useStackMapContext();
 
   //State
@@ -66,7 +64,7 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
 
   onMount(() => {
     createEffect(() => {
-      if (stackState().stackMapLoaded && !localStackLoaded()) {
+      if (stackState().stacksPopulated && !localStackLoaded()) {
         let loadedBinderList = stackMap().filter(
           (stack: any) => stack.parent === stackID
         );
@@ -133,9 +131,6 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
         }
       }
     });
-
-    // console.log("stack number is:", stackNum);
-    // console.log("stack count is:", stackState().stackCount);
 
     createEffect(() => {
       if (thisStack) {

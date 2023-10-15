@@ -27,13 +27,7 @@ export default function stackRoute() {
   const [stackMap, { makeStackMap }]: any = useStackMapContext();
   const [
     stackState,
-    {
-      loadStack,
-      closeXStacks,
-      setStackCount,
-      updateStackMapLoadStatus,
-      setStacksPopulated,
-    },
+    { setStackCount, setStacksPopulated, setInitialStackPath },
   ]: any = useStackStateContext();
   const [stackDragging, { dragToStill }]: any = useStackDraggingContext();
 
@@ -41,7 +35,6 @@ export default function stackRoute() {
     const binderListData = await fetch("/api/tables/newBinders2");
     const binderListJson = await binderListData.json();
     makeStackMap(binderListJson);
-    updateStackMapLoadStatus(true);
     setPageBuilding("populatingStacks");
 
     const currentRoute = params.stackRoute.split("/");
@@ -54,6 +47,7 @@ export default function stackRoute() {
         }
       });
     };
+
     const verifyStacks = async () => {
       return await Promise.all(
         allStackNames().map(async (stackName) => {
@@ -69,8 +63,9 @@ export default function stackRoute() {
       };
     });
     setStackCount(builtStackList.length);
-    setStackList(builtStackList);
+    setInitialStackPath(allStackNames());
     setStacksPopulated(true);
+    setStackList(builtStackList);
     setMargins();
   });
 
