@@ -164,7 +164,7 @@ export default function Binder({
     }
 
     // //load binder's output
-    const stackFromBinder = stackMap().stackList.filter(
+    const stackFromBinder = stackMap().filter(
       (stackToLoad: any) => stackToLoad.name === binderName
     );
 

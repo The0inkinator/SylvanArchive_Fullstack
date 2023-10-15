@@ -32,58 +32,12 @@ export default function stackRoute() {
   ]: any = useStackStateContext();
   const [stackDragging, { dragToStill }]: any = useStackDraggingContext();
 
-  function addStacks() {
-    const currentRoute = params.stackRoute.split("/");
-    const newStackNames = currentRoute.slice(stackList().length);
-    const convertedStackNames = newStackNames.map((stackName, index) => {
-      return `${currentRoute[currentRoute.length - 2]}/${stackName}`;
-    });
-
-    const newStacksArray = convertedStackNames.map((name, index) => () => {
-      const stackNum = stackList().length + index;
-      return <Stack stackID={`${name}`} stackNum={stackNum} />;
-    });
-
-    setStackCount(stackList().length + newStacksArray.length);
-    return newStacksArray;
-  }
-
-  function removeStacks() {
-    const oldRouteLength = pastRoute().split("/");
-    const currentRouteLength = params.stackRoute.split("/");
-    const numberToRemove = oldRouteLength.length - currentRouteLength.length;
-    dragToStill();
-    return numberToRemove;
-  }
-
-  async function checkStackMap() {
-    if (!stackMap()) {
-      await buildStackMap();
-    }
-  }
-
-  async function findStack(stackToFind: string) {
-    interface stackMapEntryInput {
-      name: string;
-    }
-
-    const fullPath = `home/${stackToFind}`;
-    const currentStack = () => {
-      const eachStack = fullPath.split("/");
-      const extraPath = eachStack.length - 2;
-      const currentStackName = eachStack.slice(extraPath);
-      return `${currentStackName[0]}/${currentStackName[1]}`;
-    };
-
-    const foundStack = stackMap().stackList.filter(
-      (stackMapEntry: stackMapEntryInput) =>
-        stackMapEntry.name === currentStack()
-    );
-    return foundStack[0];
-  }
-
   onMount(async () => {
-    await checkStackMap();
+    // await buildStackMap();
+    const stackMapData = await fetch("/api/tables/newBinders2");
+    const convertedStackMapData = await stackMapData.json();
+    makeStackMap(convertedStackMapData);
+    updateStackMapLoadStatus(true);
     setPageBuilding("populatingStacks");
 
     const currentRoute = params.stackRoute.split("/");
@@ -114,6 +68,50 @@ export default function stackRoute() {
     setStackList(stackElementArray);
     setMargins();
   });
+
+  function addStacks() {
+    const currentRoute = params.stackRoute.split("/");
+    const newStackNames = currentRoute.slice(stackList().length);
+    const convertedStackNames = newStackNames.map((stackName, index) => {
+      return `${currentRoute[currentRoute.length - 2]}/${stackName}`;
+    });
+
+    const newStacksArray = convertedStackNames.map((name, index) => () => {
+      const stackNum = stackList().length + index;
+      return <Stack stackID={`${name}`} stackNum={stackNum} />;
+    });
+
+    setStackCount(stackList().length + newStacksArray.length);
+    return newStacksArray;
+  }
+
+  function removeStacks() {
+    const oldRouteLength = pastRoute().split("/");
+    const currentRouteLength = params.stackRoute.split("/");
+    const numberToRemove = oldRouteLength.length - currentRouteLength.length;
+    dragToStill();
+    return numberToRemove;
+  }
+
+  async function findStack(stackToFind: string) {
+    interface stackMapEntryInput {
+      name: string;
+    }
+
+    const fullPath = `home/${stackToFind}`;
+    const currentStack = () => {
+      const eachStack = fullPath.split("/");
+      const extraPath = eachStack.length - 2;
+      const currentStackName = eachStack.slice(extraPath);
+      return `${currentStackName[0]}/${currentStackName[1]}`;
+    };
+
+    const foundStack = stackMap().filter(
+      (stackMapEntry: stackMapEntryInput) =>
+        stackMapEntry.name === currentStack()
+    );
+    return foundStack[0];
+  }
 
   function setMargins() {
     setTimeout(() => {

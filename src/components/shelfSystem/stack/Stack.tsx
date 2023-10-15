@@ -66,15 +66,15 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
   onMount(() => {
     createEffect(() => {
       if (stackState().stackMapLoaded && !stackDataLoaded()) {
-        let childrenOfThisStack = stackMap().stackList.filter(
-          (stack: any) => stack.name === stackID
+        let loadedBinderList = stackMap().filter(
+          (stack: any) => stack.parent === stackID
         );
-        let loadedBinderList = stackMap().binderList.filter((binder: any) =>
-          childrenOfThisStack[0].children.includes(binder.name)
-        );
+        // let loadedBinderList = stackMap().binderList.filter((binder: any) =>
+        //   childrenOfThisStack[0].children.includes(binder.name)
+        // );
 
-        const errorBinder = stackMap().binderList.filter(
-          (binder: any) => binder.name === "nothingHereYet_none"
+        const errorBinder = stackMap().filter(
+          (binder: any) => binder.name === "emptyStack"
         );
 
         setStackDataLoaded(true);
