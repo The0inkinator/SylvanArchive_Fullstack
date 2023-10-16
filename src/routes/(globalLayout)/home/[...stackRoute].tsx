@@ -1,13 +1,6 @@
 import styles from "../../../layouts/testStyles.module.css";
 import { useParams } from "@solidjs/router";
-import {
-  createEffect,
-  createSignal,
-  onMount,
-  Switch,
-  For,
-  Show,
-} from "solid-js";
+import { createEffect, createSignal, onMount, For } from "solid-js";
 import { useLocation } from "@solidjs/router";
 import { useStackMapContext } from "../../../context/StackMapContext";
 import Stack from "../../../components/shelfSystem/stack/Stack";

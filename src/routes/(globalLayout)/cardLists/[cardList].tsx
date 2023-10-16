@@ -2,10 +2,6 @@ import { useParams } from "solid-start";
 import FrontPageHeader from "../../../components/layoutComponents/frontPageHeader/FrontPageHeader";
 import cardListFetcher from "../../../components/cardListPage/cardListFetcher";
 import CardListScene from "~/components/cardListPage/cardListScene/CardListScene";
-import server$ from "solid-start/server";
-import { MongoClient } from "mongodb";
-import { createEffect } from "solid-js";
-import { useCardListContext } from "~/context/CardListContext";
 import { createRouteAction } from "solid-start";
 
 export default function cardListPage() {
