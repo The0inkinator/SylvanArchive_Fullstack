@@ -107,10 +107,8 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
       loadedBinderList.map((binder: any, index: number) => {
         if (stackState().initialStackPath.includes(binder.name)) {
           const halfBinder = binderSize / 2;
-          console.log(halfBinder);
           const binderInStack = binderSize * (index + 1) - halfBinder;
           selectedBinderCtr = binderInStack;
-          console.log(selectedBinderCtr);
         }
       });
 

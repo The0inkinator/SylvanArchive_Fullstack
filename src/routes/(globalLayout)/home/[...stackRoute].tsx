@@ -8,9 +8,10 @@ import {
   For,
   Show,
 } from "solid-js";
-import { A, useIsRouting, useLocation } from "@solidjs/router";
+import { useLocation } from "@solidjs/router";
 import { useStackMapContext } from "../../../context/StackMapContext";
 import Stack from "../../../components/shelfSystem/stack/Stack";
+import BackButton from "../../../components/shelfSystem/backButton/BackButton";
 import { useStackStateContext } from "../../../context/StackStateContext";
 import { useStackDraggingContext } from "../../../context/StackDraggingContext";
 
@@ -149,6 +150,7 @@ export default function stackRoute() {
       {/* <Show when={pageBuilding() !== "loaded"} fallback={<></>}>
         <div>{pageBuilding()}</div>
       </Show> */}
+      <BackButton />
       <div
         class={styles.shelfSceneContainer}
         ref={(el) => (shelfSceneContainer = el)}
