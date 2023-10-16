@@ -40,7 +40,7 @@ export default function stackRoute() {
   onMount(async () => {
     window.addEventListener("popstate", handlePopState);
     setMargins();
-    const binderListData = await fetch("/api/tables/newBinders2");
+    const binderListData = await fetch("/api/tables/binders");
     const binderListJson = await binderListData.json();
     makeStackMap(binderListJson);
     setPageBuilding("populatingStack");
