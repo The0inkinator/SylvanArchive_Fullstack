@@ -221,7 +221,12 @@ export default function Binder({
 
         setBinderLink(`${newRoute}`);
       } else if (binderOutput.outputType === "cardList") {
-        setBinderLink(`/cardLists/${binderOutput.outputName}`);
+        const cardListRoute = adjustedCurrentRoute()
+          .split("/")
+          .slice(3)
+          .join("/");
+        const newRoute = `/cardLists/${cardListRoute}/${newStackName}`;
+        setBinderLink(newRoute);
       } else {
         console.log("endpoint");
       }
