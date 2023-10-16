@@ -99,37 +99,44 @@ export default function stackRoute() {
     }
   }
 
-  function addStacks() {
+  function newStackList() {
     const currentRoute = params.stackRoute.split("/");
     const newStackNames = currentRoute.slice(stackList().length);
-    const convertedStackNames = newStackNames.map((stackName, index) => {
-      return `${currentRoute[currentRoute.length - 2]}/${stackName}`;
+    const fullStackObjects = newStackNames.map((stackName, index) => {
+      return stackMap().filter(
+        (stackMapObject: any) =>
+          stackMapObject.name ===
+          `${currentRoute[currentRoute.length - 2]}/${stackName}`
+      )[0];
     });
-
-    const newStacksArray = convertedStackNames.map((name, index) => () => {
+    const newStacks = fullStackObjects.map((stackObject, index) => () => {
       const stackNum = stackList().length + index;
-      return <Stack stackID={`${name}`} stackNum={stackNum} />;
+      return <Stack stackID={`${stackObject.name}`} stackNum={stackNum} />;
     });
-
-    setStackCount(stackList().length + newStacksArray.length);
-    return newStacksArray;
+    return newStacks;
   }
 
-  function removeStacks() {
-    const oldRouteLength = pastRoute().split("/");
-    const currentRouteLength = params.stackRoute.split("/");
-    const numberToRemove = oldRouteLength.length - currentRouteLength.length;
-    dragToStill();
+  function stacksLost() {
+    const oldRoute = pastRoute().split("/");
+    console.log(oldRoute);
+    const currentRoute = params.stackRoute.split("/");
+    console.log(currentRoute);
+    const numberToRemove = oldRoute.length - currentRoute.length;
     return numberToRemove;
   }
 
   createEffect(() => {
-    if (pastRoute() < params.stackRoute) {
-      setStackList((prevList) => [...prevList, addStacks()]);
+    if (pastRoute().length < params.stackRoute.length) {
+      const newStackCount = stackState().stackCount + newStackList().length;
+      setStackCount(newStackCount);
+      setStackList((prevList) => [...prevList].concat(newStackList()));
       setPastRoute(params.stackRoute);
-    } else if (pastRoute() > params.stackRoute) {
-      const newStackList = stackList().slice(0, -removeStacks());
+    } else if (pastRoute().length > params.stackRoute.length) {
+      const newStackCount = stackList().length - stacksLost();
+      const newStackList = stackList().slice(0, -stacksLost());
+      setStackCount(newStackCount);
       setStackList(newStackList);
+      dragToStill();
       setPastRoute(params.stackRoute);
     }
   });
@@ -144,7 +151,7 @@ export default function stackRoute() {
         ref={(el) => (shelfSceneContainer = el)}
       >
         <For each={stackList()} fallback={<div>No Array</div>}>
-          {(item) => <div>{item()}</div>}
+          {(returnedStack) => <div>{returnedStack}</div>}
         </For>
       </div>
     </>

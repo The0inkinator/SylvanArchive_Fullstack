@@ -212,7 +212,6 @@ export default function Binder({
         };
         const newRoute = `${adjustedCurrentRoute()}/${newStackName}`;
 
-        // linkTo(`${newRoute}`);
         setBinderLink(`${newRoute}`);
       } else if (binderOutput.outputType === "cardList") {
         setBinderLink(`/cardLists/${binderOutput.outputName}`);
