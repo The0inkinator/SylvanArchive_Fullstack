@@ -161,18 +161,6 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
       }
     });
 
-    // createEffect(() => {
-    //   if (localStackLoaded() && !scrolledTo() && thisStackActive) {
-    //     setTimeout(() => {
-    //       if (stackState().hoveredStack !== stackNum) {
-    //         if (thisStack) {
-    //           thisStack.scrollIntoView({ block: "center", behavior: "smooth" });
-    //         }
-    //       }
-    //     }, 100);
-    //   }
-    // });
-
     window.addEventListener("scroll", handleScroll);
     if (thisStack) thisStack.addEventListener("mousedown", handleMouseDown);
     if (thisStack) thisStack.addEventListener("touchstart", handleTouchStart);
