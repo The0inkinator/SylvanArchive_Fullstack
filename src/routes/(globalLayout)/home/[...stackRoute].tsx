@@ -1,6 +1,6 @@
 import styles from "../../../layouts/testStyles.module.css";
 import { useParams } from "@solidjs/router";
-import { createEffect, createSignal, onMount, For } from "solid-js";
+import { createEffect, createSignal, onMount, For, Show } from "solid-js";
 import { useLocation } from "@solidjs/router";
 import { useStackMapContext } from "../../../context/StackMapContext";
 import Stack from "../../../components/shelfSystem/stack/Stack";
@@ -8,16 +8,20 @@ import BackButton from "../../../components/shelfSystem/backButton/BackButton";
 import FrontPageHeader from "../../../components/layoutComponents/frontPageHeader/FrontPageHeader";
 import { useStackStateContext } from "../../../context/StackStateContext";
 import { useStackDraggingContext } from "../../../context/StackDraggingContext";
+import { error } from "console";
+import { useNavigate } from "solid-start";
 
 export default function stackRoute() {
   const params = useParams();
   const location = useLocation();
+  const linkTo = useNavigate();
   let shelfSceneContainer: HTMLDivElement | null = null;
   let shelfHeight: number;
   const [pastRoute, setPastRoute] = createSignal<string>(params.stackRoute);
   const [stackList, setStackList] = createSignal<any[]>([]);
+  const [dots, setDots] = createSignal<string>(".");
   const [pageBuilding, setPageBuilding] = createSignal<
-    "checkingMap" | "populatingStacks" | "loaded"
+    "checkingMap" | "populatingStack" | "errorLoading" | "stacksLoaded"
   >("checkingMap");
   const [stackMap, { makeStackMap }]: any = useStackMapContext();
   const [
@@ -27,10 +31,11 @@ export default function stackRoute() {
   const [stackDragging, { dragToStill }]: any = useStackDraggingContext();
 
   onMount(async () => {
+    setMargins();
     const binderListData = await fetch("/api/tables/newBinders2");
     const binderListJson = await binderListData.json();
     makeStackMap(binderListJson);
-    setPageBuilding("populatingStacks");
+    setPageBuilding("populatingStack");
 
     const currentRoute = params.stackRoute.split("/");
     const allStackNames = () => {
@@ -52,6 +57,17 @@ export default function stackRoute() {
     };
 
     const verifiedStackList = await verifyStacks();
+    verifiedStackList.map((stack) => {
+      if (!stack) {
+        function handleError() {
+          setPageBuilding("errorLoading");
+          setTimeout(() => {
+            linkTo("/404");
+          }, 1500);
+        }
+        throw handleError();
+      }
+    });
     const builtStackList = verifiedStackList.map((stackObject, index) => {
       return () => {
         return <Stack stackID={stackObject.name} stackNum={index + 1} />;
@@ -61,6 +77,7 @@ export default function stackRoute() {
     setInitialStackPath(allStackNames());
     setStacksPopulated(true);
     setStackList(builtStackList);
+    setPageBuilding("stacksLoaded");
     setMargins();
   });
 
@@ -113,9 +130,7 @@ export default function stackRoute() {
 
   function stacksLost() {
     const oldRoute = pastRoute().split("/");
-
     const currentRoute = params.stackRoute.split("/");
-
     const numberToRemove = oldRoute.length - currentRoute.length;
     return numberToRemove;
   }
@@ -169,6 +184,39 @@ export default function stackRoute() {
     }
   });
 
+  createEffect(() => {
+    if (pageBuilding() !== "stacksLoaded") {
+      let dots = 2;
+      function loop() {
+        if (dots === 1) {
+          dots = 2;
+          setTimeout(loop, 300);
+          setDots(".");
+        } else if (dots === 2) {
+          dots = 3;
+          setTimeout(loop, 300);
+          setDots("..");
+        } else if (dots === 3) {
+          dots = 1;
+          setTimeout(loop, 300);
+          setDots("...");
+        }
+      }
+      loop();
+    }
+  });
+
+  const [loadingText, setLoadingText] = createSignal<string>("");
+  createEffect(() => {
+    if (pageBuilding() === "checkingMap") {
+      setLoadingText("Checking Stack Map");
+    } else if (pageBuilding() === "errorLoading") {
+      setLoadingText("Error Loading Data!");
+    } else if (pageBuilding() === "populatingStack") {
+      setLoadingText("Populating Stacks");
+    }
+  });
+
   return (
     <>
       <FrontPageHeader />
@@ -177,9 +225,21 @@ export default function stackRoute() {
         class={styles.shelfSceneContainer}
         ref={(el) => (shelfSceneContainer = el)}
       >
-        <For each={stackList()} fallback={<div>No Array</div>}>
-          {(returnedStack) => <div>{returnedStack}</div>}
-        </For>
+        <Show
+          when={pageBuilding() === "stacksLoaded"}
+          fallback={
+            <div style={styles.loadingTextBox}>
+              <div class={styles.loadingText}>
+                {loadingText()}
+                {dots()}
+              </div>
+            </div>
+          }
+        >
+          <For each={stackList()} fallback={<div>No Array</div>}>
+            {(returnedStack) => <div>{returnedStack}</div>}
+          </For>
+        </Show>
       </div>
     </>
   );

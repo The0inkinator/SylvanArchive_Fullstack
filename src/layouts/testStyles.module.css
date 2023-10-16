@@ -18,3 +18,27 @@
   /* display: flex;
   flex-direction: column; */
 }
+
+.loadingTextBox {
+  width: 100vw;
+  text-align: center;
+  font-size: 1.5rem;
+  font-family: var(--SubHeadingFont);
+}
+
+.loadingText {
+  color: white;
+  opacity: 50%;
+  text-align: center;
+  font-size: 1.5rem;
+  font-family: var(--SubHeadingFont);
+}
+
+.loadingTextDots {
+  color: white;
+  opacity: 50%;
+  text-align: center;
+  font-size: 3rem;
+  font-family: var(--SubHeadingFont);
+  letter-spacing: 4px;
+}
