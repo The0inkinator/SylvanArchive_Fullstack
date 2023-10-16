@@ -1,4 +1,5 @@
 import { useParams } from "solid-start";
+import styles from "../../../layouts/cardLists.module.css";
 import FrontPageHeader from "../../../components/layoutComponents/frontPageHeader/FrontPageHeader";
 import cardListFetcher from "../../../components/cardListPage/cardListFetcher";
 import CardListScene from "~/components/cardListPage/cardListScene/CardListScene";

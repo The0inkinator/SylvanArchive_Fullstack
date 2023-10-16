@@ -1,4 +1,4 @@
-import styles from "../../../layouts/testStyles.module.css";
+import styles from "../../../layouts/stackRoute.module.css";
 import { useParams } from "@solidjs/router";
 import {
   createEffect,

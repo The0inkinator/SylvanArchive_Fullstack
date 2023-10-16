@@ -205,18 +205,18 @@ export default function Binder({
   const handleDoubleClick = (event: MouseEvent) => {
     if (stackDragging() === "still" && parentActive()) {
       setSelectedBinder(binderNum);
+      const newStackName = binderOutput.outputName.split("/")[1];
+      const adjustedCurrentRoute = () => {
+        function slashCheck(input: string) {
+          return input.charAt(input.length - 1) === "/";
+        }
+        if (slashCheck(currentLocation.pathname)) {
+          return currentLocation.pathname.slice(0, -1);
+        } else {
+          return currentLocation.pathname;
+        }
+      };
       if (binderOutput.outputType === "newStack") {
-        const newStackName = binderOutput.outputName.split("/")[1];
-        const adjustedCurrentRoute = () => {
-          function slashCheck(input: string) {
-            return input.charAt(input.length - 1) === "/";
-          }
-          if (slashCheck(currentLocation.pathname)) {
-            return currentLocation.pathname.slice(0, -1);
-          } else {
-            return currentLocation.pathname;
-          }
-        };
         const newRoute = `${adjustedCurrentRoute()}/${newStackName}`;
 
         setBinderLink(`${newRoute}`);
