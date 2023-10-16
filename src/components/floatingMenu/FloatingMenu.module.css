@@ -35,7 +35,7 @@
 #FMHomeIcon {
   height: 80%;
   aspect-ratio: 1/1;
-  background-image: url("/public/logos/sylvanArchiveLogo.svg");
+  background-image: url("/logos/sylvanArchiveLogo.svg");
   margin: auto;
   grid-column: 1;
 }
@@ -55,7 +55,7 @@
   height: 70%;
   aspect-ratio: 1/1;
   margin: auto;
-  background-image: url("/public/logos/searchIcon.svg");
+  background-image: url("/logos/searchIcon.svg");
   grid-column: 1;
 }
 
@@ -112,7 +112,7 @@
 #FMBookmarkIcon {
   height: 75%;
   aspect-ratio: 1/1;
-  background-image: url("/public/logos/bookmarksIcon.svg");
+  background-image: url("/logos/bookmarksIcon.svg");
   margin: auto;
   grid-column: 1;
 }
@@ -160,6 +160,6 @@
 #FMAccountIcon {
   height: 75%;
   aspect-ratio: 1/1;
-  background-image: url("/public/logos/accountIcon.svg");
+  background-image: url("/logos/accountIcon.svg");
   margin: auto;
 }

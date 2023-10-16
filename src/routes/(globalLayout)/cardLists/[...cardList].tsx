@@ -1,24 +1,28 @@
 import { useParams } from "solid-start";
+import { Show, For, createSignal } from "solid-js";
 import styles from "../../../layouts/cardLists.module.css";
 import FrontPageHeader from "../../../components/layoutComponents/frontPageHeader/FrontPageHeader";
 import cardListFetcher from "../../../components/cardListPage/cardListFetcher";
-import CardListScene from "~/components/cardListPage/cardListScene/CardListScene";
-import { createRouteAction } from "solid-start";
 
 export default function cardListPage() {
-  const [echoing, echo] = createRouteAction(async (message: string) => {
-    // await new Promise((resolve, reject) => setTimeout(resolve, 1000));
-    console.log(message);
-    return message;
-  });
-
   const pathInput = useParams();
+  const [pageBuilding, setPageBuilding] = createSignal<
+    "checkingMap" | "populatingStack" | "errorLoading" | "stacksLoaded"
+  >("checkingMap");
+  const [cardList, setCardList] = createSignal<any[]>([]);
   cardListFetcher(`${pathInput.cardList}`);
 
   return (
     <>
       <FrontPageHeader />
-      <CardListScene />
+      <Show
+        when={pageBuilding() === "stacksLoaded"}
+        fallback={<div style={styles.loadingTextBox}></div>}
+      >
+        <For each={cardList()} fallback={<div>No Array</div>}>
+          {(returnedStack) => <div>{returnedStack}</div>}
+        </For>
+      </Show>
     </>
   );
 }
