@@ -136,6 +136,36 @@ export default function stackRoute() {
       );
       setPastRoute(params.stackRoute);
     } else if (pastRoute().length > params.stackRoute.length) {
+      let scrolling: boolean = true;
+      let scrollingCheck: any;
+
+      function manageScrolling() {
+        clearTimeout(scrollingCheck);
+        scrollingCheck = setTimeout(() => {
+          scrolling = false;
+          if (shelfSceneContainer) {
+            shelfSceneContainer.style.transition = "padding 0.05s";
+            shelfSceneContainer.style.paddingBottom = `${currentBottomMargin}px`;
+          }
+          window.removeEventListener("scroll", manageScrolling);
+        }, 1);
+      }
+
+      setTimeout(() => {
+        window.addEventListener("scroll", manageScrolling);
+      }, 200);
+
+      const currentBottomMargin = parseInt(
+        shelfSceneContainer?.style.paddingBottom as string
+      );
+
+      if (shelfSceneContainer) {
+        shelfSceneContainer.style.transition = "padding 0s";
+        shelfSceneContainer.style.paddingBottom = `${
+          currentBottomMargin + shelfHeight
+        }px`;
+      }
+
       const newStackCount = stackList().length - stacksLost();
       const newStackList = stackList().slice(0, -stacksLost());
       setStackCount(newStackCount);

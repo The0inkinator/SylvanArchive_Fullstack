@@ -139,6 +139,16 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
           changeActiveStack(thisStack);
           setSelectedBinder(0);
           setHoveredBinder(0);
+          setTimeout(() => {
+            if (stackState().hoveredStack !== stackNum) {
+              if (thisStack) {
+                thisStack.scrollIntoView({
+                  block: "center",
+                  behavior: "smooth",
+                });
+              }
+            }
+          }, 1);
         }
       }
     });
@@ -151,17 +161,17 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
       }
     });
 
-    createEffect(() => {
-      if (localStackLoaded() && !scrolledTo() && thisStackActive) {
-        setTimeout(() => {
-          if (stackState().hoveredStack !== stackNum) {
-            if (thisStack) {
-              thisStack.scrollIntoView({ block: "center", behavior: "smooth" });
-            }
-          }
-        }, 100);
-      }
-    });
+    // createEffect(() => {
+    //   if (localStackLoaded() && !scrolledTo() && thisStackActive) {
+    //     setTimeout(() => {
+    //       if (stackState().hoveredStack !== stackNum) {
+    //         if (thisStack) {
+    //           thisStack.scrollIntoView({ block: "center", behavior: "smooth" });
+    //         }
+    //       }
+    //     }, 100);
+    //   }
+    // });
 
     window.addEventListener("scroll", handleScroll);
     if (thisStack) thisStack.addEventListener("mousedown", handleMouseDown);
