@@ -37,6 +37,9 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
   const [binderList, setBinderList] = createSignal<any[]>([]);
   const [scrolledTo, setScrolledTo] = createSignal<boolean>(false);
 
+  //BinderList
+  let loadedBinderList: any = null;
+
   //Ref Variables
   let thisStack: HTMLDivElement | null = null;
   let binderContainer: HTMLDivElement | null = null;
@@ -65,7 +68,7 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
   onMount(() => {
     createEffect(() => {
       if (stackState().stacksPopulated && !localStackLoaded()) {
-        let loadedBinderList = stackMap().filter(
+        loadedBinderList = stackMap().filter(
           (stack: any) => stack.parent === stackID
         );
 
@@ -100,6 +103,16 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
           return (stackWidth() - windowWidth) / -2;
         }
       };
+
+      loadedBinderList.map((binder: any, index: number) => {
+        if (stackState().initialStackPath.includes(binder.name)) {
+          const halfBinder = binderSize / 2;
+          console.log(halfBinder);
+          const binderInStack = binderSize * (index + 1) - halfBinder;
+          selectedBinderCtr = binderInStack;
+          console.log(selectedBinderCtr);
+        }
+      });
 
       if (selectedBinderCtr > 0) {
         const currentCenter: number = windowWidth / 2 - selectedBinderCtr;
@@ -365,7 +378,7 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
         ref={(el) => (thisStack = el)}
         onmouseenter={() => {
           stackHoveredForCursor = true;
-          if (stackDragging() !== "dragging") {
+          if (stackDragging() !== "dragging" && thisStackActive) {
             document.body.style.cursor = "grab";
           }
         }}

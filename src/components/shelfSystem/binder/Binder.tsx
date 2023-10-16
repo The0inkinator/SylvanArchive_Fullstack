@@ -83,6 +83,9 @@ export default function Binder({
   let thisBinder: HTMLDivElement | null = null;
 
   //BgCard styling Variables
+  const binderInitSelected = stackState().initialStackPath.filter(
+    (pathPoint: string) => pathPoint === binderName
+  )[0];
   let bgCardArray: any[] = [];
   let bgCardPositions: string[] = ["translate(-50%, -50%)"];
   let bgCardRotation: number = 0;
@@ -193,6 +196,10 @@ export default function Binder({
       }, timeToFadeIn);
     }
     fadeIn();
+
+    if (binderInitSelected) {
+      setBinderActive(true);
+    }
   });
 
   const handleDoubleClick = (event: MouseEvent) => {
@@ -246,6 +253,8 @@ export default function Binder({
       if (parentActive() && binderState().selectedBinder === 0) {
         setBinderVisible(true);
       } else if (thisBinderSelected() !== false) {
+        setBinderVisible(true);
+      } else if (binderInitSelected) {
         setBinderVisible(true);
       } else {
         setBinderVisible(false);

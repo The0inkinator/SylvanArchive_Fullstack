@@ -109,13 +109,10 @@ export default function stackRoute() {
           `${currentRoute[currentRoute.length - 2]}/${stackName}`
       )[0];
     });
-
     const newStacks = fullStackObjects.map((stackObject, index) => () => {
       const stackNum = stackListLength + index + 1;
-      console.log("stack num is:", stackNum);
       return <Stack stackID={`${stackObject.name}`} stackNum={stackNum} />;
     });
-
     return newStacks;
   }
 
