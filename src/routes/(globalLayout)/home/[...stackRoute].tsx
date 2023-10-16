@@ -99,7 +99,7 @@ export default function stackRoute() {
     }
   }
 
-  function newStackList() {
+  function newStackList(stackListLength: number) {
     const currentRoute = params.stackRoute.split("/");
     const newStackNames = currentRoute.slice(stackList().length);
     const fullStackObjects = newStackNames.map((stackName, index) => {
@@ -109,8 +109,10 @@ export default function stackRoute() {
           `${currentRoute[currentRoute.length - 2]}/${stackName}`
       )[0];
     });
+
     const newStacks = fullStackObjects.map((stackObject, index) => () => {
-      const stackNum = stackList().length + index;
+      const stackNum = stackListLength + index + 1;
+      console.log("stack num is:", stackNum);
       return <Stack stackID={`${stackObject.name}`} stackNum={stackNum} />;
     });
 
@@ -128,9 +130,12 @@ export default function stackRoute() {
 
   createEffect(() => {
     if (pastRoute().length < params.stackRoute.length) {
-      const newStackCount = stackState().stackCount + newStackList().length;
+      const newStackCount =
+        stackState().stackCount + newStackList(stackList().length).length;
       setStackCount(newStackCount);
-      setStackList((prevList) => [...prevList].concat(newStackList()));
+      setStackList((prevList) =>
+        [...prevList].concat(newStackList(stackList().length))
+      );
       setPastRoute(params.stackRoute);
     } else if (pastRoute().length > params.stackRoute.length) {
       const newStackCount = stackList().length - stacksLost();
