@@ -8,6 +8,7 @@ interface stackInfo {
   stacksPopulated: boolean;
   hoveredStack: number;
   initialStackPath: string | null;
+  popStateTriggered: boolean;
 }
 
 export function StackStateProvider(props: any) {
@@ -17,6 +18,7 @@ export function StackStateProvider(props: any) {
       stacksPopulated: false,
       hoveredStack: 1,
       initialStackPath: null,
+      popStateTriggered: false,
     }),
     stackStateList = [
       stackState,
@@ -49,6 +51,12 @@ export function StackStateProvider(props: any) {
           setStackState((prevState) => ({
             ...prevState,
             initialStackPath: inputPath,
+          }));
+        },
+        setPopState(input: boolean) {
+          setStackState((prevState) => ({
+            ...prevState,
+            popStateTriggered: input,
           }));
         },
       },

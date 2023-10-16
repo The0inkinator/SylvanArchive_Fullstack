@@ -1,6 +1,13 @@
 import styles from "../../../layouts/testStyles.module.css";
 import { useParams } from "@solidjs/router";
-import { createEffect, createSignal, onMount, For, Show } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  onMount,
+  For,
+  Show,
+  onCleanup,
+} from "solid-js";
 import { useLocation } from "@solidjs/router";
 import { useStackMapContext } from "../../../context/StackMapContext";
 import Stack from "../../../components/shelfSystem/stack/Stack";
@@ -26,11 +33,12 @@ export default function stackRoute() {
   const [stackMap, { makeStackMap }]: any = useStackMapContext();
   const [
     stackState,
-    { setStackCount, setStacksPopulated, setInitialStackPath },
+    { setStackCount, setStacksPopulated, setInitialStackPath, setPopState },
   ]: any = useStackStateContext();
   const [stackDragging, { dragToStill }]: any = useStackDraggingContext();
 
   onMount(async () => {
+    window.addEventListener("popstate", handlePopState);
     setMargins();
     const binderListData = await fetch("/api/tables/newBinders2");
     const binderListJson = await binderListData.json();
@@ -80,6 +88,10 @@ export default function stackRoute() {
     setPageBuilding("stacksLoaded");
     setMargins();
   });
+
+  function handlePopState() {
+    setPopState(true);
+  }
 
   async function findStack(stackToFind: string) {
     interface stackMapEntryInput {

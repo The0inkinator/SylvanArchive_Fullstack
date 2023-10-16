@@ -26,7 +26,7 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
     binderState,
     { setSelectedBinder, setHoveredBinder, setWaitingToLoad },
   ]: any = useBinderStateContext();
-  const [stackState, { changeActiveStack, setHoveredStack }]: any =
+  const [stackState, { changeActiveStack, setHoveredStack, setPopState }]: any =
     useStackStateContext();
   const [stackMap]: any = useStackMapContext();
 
@@ -149,6 +149,21 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
               }
             }
           }, 1);
+        }
+      }
+    });
+
+    createEffect(() => {
+      if (
+        stackState().popStateTriggered &&
+        stackState().stackCount === stackNum
+      ) {
+        setPopState(false);
+        if (thisStack) {
+          thisStack.scrollIntoView({
+            block: "center",
+            behavior: "smooth",
+          });
         }
       }
     });
@@ -334,8 +349,8 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
           setTimeout(loop, 1);
         } else {
           dragToStill();
-          linkTo(binderState().link, { scroll: false });
           slideRunning = false;
+          linkTo(binderState().link, { scroll: false });
         }
       }
       loop();
