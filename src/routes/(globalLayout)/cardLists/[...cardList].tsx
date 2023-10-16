@@ -1,5 +1,5 @@
 import { useParams } from "solid-start";
-import { Show, For, createSignal, onMount } from "solid-js";
+import { Show, For, createSignal, createEffect, onMount } from "solid-js";
 import styles from "../../../layouts/cardLists.module.css";
 import FrontPageHeader from "../../../components/layoutComponents/frontPageHeader/FrontPageHeader";
 import cardListFetcher from "../../../components/cardListPage/cardListFetcher";
@@ -41,12 +41,23 @@ export default function cardListPage() {
     console.log(localCardList());
   });
 
+  const [loadingText, setLoadingText] = createSignal<string>("");
+  createEffect(() => {
+    if (pageBuilding() === "checkingMap") {
+      setLoadingText("Checking Stack Map");
+    } else if (pageBuilding() === "errorLoading") {
+      setLoadingText("Error Loading Data");
+    } else if (pageBuilding() === "findingCards") {
+      setLoadingText("Finding Cards");
+    }
+  });
+
   return (
     <>
       <FrontPageHeader />
       <Show
         when={pageBuilding() === "cardsLoaded"}
-        fallback={<div style={styles.loadingTextBox}>Loading</div>}
+        fallback={<div style={styles.loadingTextBox}>{loadingText()}</div>}
       >
         <div class={styles.sceneContainer}>
           <div class={styles.cardListContainer}>
