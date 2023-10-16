@@ -113,14 +113,15 @@ export default function stackRoute() {
       const stackNum = stackList().length + index;
       return <Stack stackID={`${stackObject.name}`} stackNum={stackNum} />;
     });
+
     return newStacks;
   }
 
   function stacksLost() {
     const oldRoute = pastRoute().split("/");
-    console.log(oldRoute);
+
     const currentRoute = params.stackRoute.split("/");
-    console.log(currentRoute);
+
     const numberToRemove = oldRoute.length - currentRoute.length;
     return numberToRemove;
   }

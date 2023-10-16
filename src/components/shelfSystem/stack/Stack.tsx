@@ -152,11 +152,11 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
       }
     });
 
-    console.log(
-      `On mount I am ${stackID} (stack number ${stackNum}) and I see the stack count as ${
-        stackState().stackCount
-      }`
-    );
+    // console.log(
+    //   `On mount I am ${stackID} (stack number ${stackNum}) and I see the stack count as ${
+    //     stackState().stackCount
+    //   }`
+    // );
 
     window.addEventListener("scroll", handleScroll);
     if (thisStack) thisStack.addEventListener("mousedown", handleMouseDown);
