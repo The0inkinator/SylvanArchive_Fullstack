@@ -20,6 +20,7 @@ import { useBinderStateContext } from "../../../context/BinderStateContext";
 import { useStackStateContext } from "../../../context/StackStateContext";
 import { useStackMapContext } from "~/context/StackMapContext";
 import { useNavigate } from "solid-start";
+import { useLocation } from "@solidjs/router";
 
 //TYPING
 interface CardFetcherInputs {
@@ -56,7 +57,7 @@ export default function Binder({
   //Context States
   const [
     binderState,
-    { setSelectedBinder, setHoveredBinder, setWaitingToLoad },
+    { setSelectedBinder, setHoveredBinder, setWaitingToLoad, setBinderLink },
   ]: any = useBinderStateContext();
   const [stackState, { changeActiveStack, loadStack }]: any =
     useStackStateContext();
@@ -75,12 +76,16 @@ export default function Binder({
   >(false);
   const [parentActive, setParentActive] = createSignal<boolean>(true);
   const linkTo = useNavigate();
+  const currentLocation = useLocation();
 
   //Ref Variables
   let binderContainer: HTMLDivElement | null = null;
   let thisBinder: HTMLDivElement | null = null;
 
   //BgCard styling Variables
+  const binderInitSelected = stackState().initialStackPath.filter(
+    (pathPoint: string) => pathPoint === binderName
+  )[0];
   let bgCardArray: any[] = [];
   let bgCardPositions: string[] = ["translate(-50%, -50%)"];
   let bgCardRotation: number = 0;
@@ -162,7 +167,7 @@ export default function Binder({
     }
 
     // //load binder's output
-    const stackFromBinder = stackMap().stackList.filter(
+    const stackFromBinder = stackMap().filter(
       (stackToLoad: any) => stackToLoad.name === binderName
     );
 
@@ -191,39 +196,35 @@ export default function Binder({
       }, timeToFadeIn);
     }
     fadeIn();
+
+    if (binderInitSelected) {
+      setBinderActive(true);
+    }
   });
 
   const handleDoubleClick = (event: MouseEvent) => {
-    let loadStackRunning: boolean = false;
-    function loadStackFromBinder() {
-      let timer: number = 2000;
-      loadStackRunning = true;
-      function loop() {
-        if (
-          binderState().waitingToLoad &&
-          stackDragging() !== "locked" &&
-          binderState().selectedBinder === binderNum
-        ) {
-          setWaitingToLoad(false);
-          if (binderOutput.outputType === "newStack") {
-            loadStack(binderOutput.outputName);
-          } else if (binderOutput.outputType === "cardList") {
-            linkTo(`/cardLists/${binderOutput.outputName}`);
-          } else {
-            console.log("endpoint");
-          }
-        } else {
-          if (timer > 0) {
-            timer = timer - 1;
-            setTimeout(loop, 1);
-          } else console.log("loopEnded");
-        }
-      }
-      loop();
-    }
     if (stackDragging() === "still" && parentActive()) {
       setSelectedBinder(binderNum);
-      if (!loadStackRunning) loadStackFromBinder();
+      if (binderOutput.outputType === "newStack") {
+        const newStackName = binderOutput.outputName.split("/")[1];
+        const adjustedCurrentRoute = () => {
+          function slashCheck(input: string) {
+            return input.charAt(input.length - 1) === "/";
+          }
+          if (slashCheck(currentLocation.pathname)) {
+            return currentLocation.pathname.slice(0, -1);
+          } else {
+            return currentLocation.pathname;
+          }
+        };
+        const newRoute = `${adjustedCurrentRoute()}/${newStackName}`;
+
+        setBinderLink(`${newRoute}`);
+      } else if (binderOutput.outputType === "cardList") {
+        setBinderLink(`/cardLists/${binderOutput.outputName}`);
+      } else {
+        console.log("endpoint");
+      }
     }
   };
 
@@ -252,6 +253,8 @@ export default function Binder({
       if (parentActive() && binderState().selectedBinder === 0) {
         setBinderVisible(true);
       } else if (thisBinderSelected() !== false) {
+        setBinderVisible(true);
+      } else if (binderInitSelected) {
         setBinderVisible(true);
       } else {
         setBinderVisible(false);

@@ -1,0 +1,44 @@
+.textCont {
+  width: 100%;
+  height: 100vh;
+  /* background-color: white; */
+  display: grid;
+  place-items: center;
+  color: white;
+}
+
+.text {
+  color: red;
+  font-size: 2rem;
+}
+
+.shelfSceneContainer {
+  width: 100vw;
+  overflow-x: hidden;
+  /* display: flex;
+  flex-direction: column; */
+}
+
+.loadingTextBox {
+  width: 100vw;
+  text-align: center;
+  font-size: 1.5rem;
+  font-family: var(--SubHeadingFont);
+}
+
+.loadingText {
+  color: white;
+  opacity: 50%;
+  text-align: center;
+  font-size: 1.5rem;
+  font-family: var(--SubHeadingFont);
+}
+
+.loadingTextDots {
+  color: white;
+  opacity: 50%;
+  text-align: center;
+  font-size: 3rem;
+  font-family: var(--SubHeadingFont);
+  letter-spacing: 4px;
+}

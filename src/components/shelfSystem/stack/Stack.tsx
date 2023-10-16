@@ -5,7 +5,7 @@ import { useStackDraggingContext } from "../../../context/StackDraggingContext";
 import { useBinderStateContext } from "../../../context/BinderStateContext";
 import { useStackStateContext } from "../../../context/StackStateContext";
 import { useStackMapContext } from "../../../context/StackMapContext";
-
+import { useNavigate } from "solid-start";
 interface StackInputs {
   stackID: string;
   stackNum: number;
@@ -26,15 +26,19 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
     binderState,
     { setSelectedBinder, setHoveredBinder, setWaitingToLoad },
   ]: any = useBinderStateContext();
-  const [stackState, { changeActiveStack, setHoveredStack }]: any =
+  const [stackState, { changeActiveStack, setHoveredStack, setPopState }]: any =
     useStackStateContext();
   const [stackMap]: any = useStackMapContext();
 
   //State
   const [stackWidth, setStackWidth] = createSignal<number>(0);
   const [stackPosition, setStackPosition] = createSignal<number>(0);
-  const [stackDataLoaded, setStackDataLoaded] = createSignal<boolean>(false);
+  const [localStackLoaded, setLocalStackLoaded] = createSignal<boolean>(false);
   const [binderList, setBinderList] = createSignal<any[]>([]);
+  const [scrolledTo, setScrolledTo] = createSignal<boolean>(false);
+
+  //BinderList
+  let loadedBinderList: any = null;
 
   //Ref Variables
   let thisStack: HTMLDivElement | null = null;
@@ -59,21 +63,20 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
   let slideRunning: boolean = false;
   let distanceToSlide: number = 0;
 
+  const linkTo = useNavigate();
+
   onMount(() => {
     createEffect(() => {
-      if (stackState().stackMapLoaded && !stackDataLoaded()) {
-        let childrenOfThisStack = stackMap().stackList.filter(
-          (stack: any) => stack.name === stackID
-        );
-        let loadedBinderList = stackMap().binderList.filter((binder: any) =>
-          childrenOfThisStack[0].children.includes(binder.name)
+      if (stackState().stacksPopulated && !localStackLoaded()) {
+        loadedBinderList = stackMap().filter(
+          (stack: any) => stack.parent === stackID
         );
 
-        const errorBinder = stackMap().binderList.filter(
-          (binder: any) => binder.name === "nothingHereYet_none"
+        const errorBinder = stackMap().filter(
+          (binder: any) => binder.name === "emptyStack"
         );
 
-        setStackDataLoaded(true);
+        setLocalStackLoaded(true);
 
         if (loadedBinderList.length > 0) {
           setBinderList(loadedBinderList);
@@ -100,6 +103,14 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
           return (stackWidth() - windowWidth) / -2;
         }
       };
+
+      loadedBinderList.map((binder: any, index: number) => {
+        if (stackState().initialStackPath.includes(binder.name)) {
+          const halfBinder = binderSize / 2;
+          const binderInStack = binderSize * (index + 1) - halfBinder;
+          selectedBinderCtr = binderInStack;
+        }
+      });
 
       if (selectedBinderCtr > 0) {
         const currentCenter: number = windowWidth / 2 - selectedBinderCtr;
@@ -128,6 +139,27 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
           changeActiveStack(thisStack);
           setSelectedBinder(0);
           setHoveredBinder(0);
+          setTimeout(() => {
+            if (stackState().hoveredStack !== stackNum) {
+              if (thisStack) {
+                thisStack.scrollIntoView({
+                  block: "center",
+                  behavior: "smooth",
+                });
+              }
+            }
+          }, 1);
+        }
+      }
+    });
+
+    createEffect(() => {
+      if (
+        stackState().popStateTriggered &&
+        stackState().stackCount === stackNum
+      ) {
+        setPopState(false);
+        if (thisStack) {
           thisStack.scrollIntoView({
             block: "center",
             behavior: "smooth",
@@ -318,6 +350,7 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
         } else {
           dragToStill();
           slideRunning = false;
+          linkTo(binderState().link, { scroll: false });
         }
       }
       loop();
@@ -350,50 +383,51 @@ export default function Stack({ stackID, stackNum }: StackInputs) {
   }
 
   return (
-    <div
-      class={styles.stackHandle}
-      ref={(el) => (thisStack = el)}
-      onmouseenter={() => {
-        stackHoveredForCursor = true;
-        if (stackDragging() !== "dragging") {
-          document.body.style.cursor = "grab";
-        }
-      }}
-      onclick={() => {}}
-      onmouseleave={() => {
-        stackHoveredForCursor = false;
-        if (stackDragging() === "still") {
-          document.body.style.cursor = "auto";
-        }
-      }}
-      style={{
-        //This is the property that handles the rendering of the stack position
-        left: `${collisionCheck(stackPosition())}px`,
-        //Stackwidth is set on mount and updated on resize
-        width: `${stackWidth()}px`,
-        // opacity: thisStackActive() ? "100%" : "50%",
-      }}
-    >
-      <div class={styles.stackContainer} ref={(el) => (binderContainer = el)}>
-        <For
-          each={binderList()}
-          fallback={<div class={styles.loadingListText}></div>}
-        >
-          {(binder: any, index: any) => {
-            // console.log(`binders to load`, binder.name);
-            return (
-              <Binder
-                title={binder.displayName}
-                binderName={binder.name}
-                displayArt={binder.displayArt}
-                bgCards={binder.bgArts}
-                binderNum={index() + 1}
-                binderParentElement={thisStack}
-                binderChildType={binder.childType}
-              />
-            );
-          }}
-        </For>
+    <div class={styles.stackSlider}>
+      <div
+        class={styles.stackHandle}
+        ref={(el) => (thisStack = el)}
+        onmouseenter={() => {
+          stackHoveredForCursor = true;
+          if (stackDragging() !== "dragging" && thisStackActive) {
+            document.body.style.cursor = "grab";
+          }
+        }}
+        onclick={() => {}}
+        onmouseleave={() => {
+          stackHoveredForCursor = false;
+          if (stackDragging() === "still") {
+            document.body.style.cursor = "auto";
+          }
+        }}
+        style={{
+          //This is the property that handles the rendering of the stack position
+          left: `${collisionCheck(stackPosition())}px`,
+          //Stackwidth is set on mount and updated on resize
+          width: `${stackWidth()}px`,
+        }}
+      >
+        <div class={styles.stackContainer} ref={(el) => (binderContainer = el)}>
+          <For
+            each={binderList()}
+            fallback={<div class={styles.loadingListText}></div>}
+          >
+            {(binder: any, index: any) => {
+              // console.log(`binders to load`, binder.name);
+              return (
+                <Binder
+                  title={binder.displayName}
+                  binderName={binder.name}
+                  displayArt={binder.displayArt}
+                  bgCards={binder.bgArts}
+                  binderNum={index() + 1}
+                  binderParentElement={thisStack}
+                  binderChildType={binder.childType}
+                />
+              );
+            }}
+          </For>
+        </div>
       </div>
     </div>
   );

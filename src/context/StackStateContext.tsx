@@ -4,21 +4,21 @@ const StackStateContext = createContext();
 
 interface stackInfo {
   activeStack: any;
-  loadingStack: string | "none";
   stackCount: number;
-  stacksToClose: number;
-  stackMapLoaded: boolean;
+  stacksPopulated: boolean;
   hoveredStack: number;
+  initialStackPath: string | null;
+  popStateTriggered: boolean;
 }
 
 export function StackStateProvider(props: any) {
   const [stackState, setStackState] = createSignal<stackInfo>({
       activeStack: null,
-      loadingStack: "none",
       stackCount: 1,
-      stacksToClose: 0,
-      stackMapLoaded: false,
+      stacksPopulated: false,
       hoveredStack: 1,
+      initialStackPath: null,
+      popStateTriggered: false,
     }),
     stackStateList = [
       stackState,
@@ -29,35 +29,34 @@ export function StackStateProvider(props: any) {
             activeStack: input,
           }));
         },
-        loadStack(inputPath: string | "none") {
+        setStackCount(inputNumber: number) {
           setStackState((prevState) => ({
             ...prevState,
-            loadingStack: inputPath,
+            stackCount: inputNumber,
           }));
         },
-        addToStackCount(inputNumber: number) {
-          const newStackCount = stackState().stackCount + inputNumber;
+        setStacksPopulated(input: boolean) {
           setStackState((prevState) => ({
             ...prevState,
-            stackCount: newStackCount,
-          }));
-        },
-        closeXStacks(inputNumber: number) {
-          setStackState((prevState) => ({
-            ...prevState,
-            stacksToClose: inputNumber,
-          }));
-        },
-        updateStackMapLoadStatus(input: boolean) {
-          setStackState((prevState) => ({
-            ...prevState,
-            stackMapLoaded: input,
+            stacksPopulated: input,
           }));
         },
         setHoveredStack(inputNumber: number) {
           setStackState((prevState) => ({
             ...prevState,
             hoveredStack: inputNumber,
+          }));
+        },
+        setInitialStackPath(inputPath: string) {
+          setStackState((prevState) => ({
+            ...prevState,
+            initialStackPath: inputPath,
+          }));
+        },
+        setPopState(input: boolean) {
+          setStackState((prevState) => ({
+            ...prevState,
+            popStateTriggered: input,
           }));
         },
       },

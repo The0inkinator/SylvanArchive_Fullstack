@@ -6,6 +6,7 @@ interface binderInfo {
   hoveredBinder: number;
   selectedBinder: number;
   waitingToLoad: boolean;
+  link: string | null;
 }
 
 export function BinderStateProvider(props: any) {
@@ -13,6 +14,7 @@ export function BinderStateProvider(props: any) {
       hoveredBinder: 0,
       selectedBinder: 0,
       waitingToLoad: false,
+      link: null,
     }),
     binderStateList = [
       binderState,
@@ -33,6 +35,12 @@ export function BinderStateProvider(props: any) {
           setBinderState((prevState) => ({
             ...prevState,
             waitingToLoad: input,
+          }));
+        },
+        setBinderLink(input: string) {
+          setBinderState((prevState) => ({
+            ...prevState,
+            link: input,
           }));
         },
       },
