@@ -240,7 +240,7 @@ export default function stackRoute() {
         <Show
           when={pageBuilding() === "stacksLoaded"}
           fallback={
-            <div style={styles.loadingTextBox}>
+            <div class={styles.loadingTextBox}>
               <div class={styles.loadingText}>
                 {loadingText()}
                 {dots()}
