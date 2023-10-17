@@ -6,10 +6,12 @@
   padding-top: 10vw;
 }
 
-.cardListContainer {
-  max-width: 80vw;
+.cardGrid {
+  max-width: var(--CardListMargin);
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .loadingText {

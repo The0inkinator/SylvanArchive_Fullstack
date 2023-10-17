@@ -30,6 +30,7 @@
   /*Sizes*/
   --MagicCardSize: 12rem;
   --BinderSize: 12rem;
+  --CardSize: 15rem;
   --HeaderHeight: calc(100vh / 7);
   --FooterHeight: 7rem;
   --MenuHeight: 3rem;
@@ -37,7 +38,8 @@
   --BookmarkBarWidth: 30vw;
   /* Margins */
   --NavGridMargin: 70vw;
-  --ContContainUpperMargin: calc(var(--MenuHeight) * 2.5)
+  --ContContainUpperMargin: calc(var(--MenuHeight) * 2.5);
+  --CardListMargin: 70vw
     /* ^^^ this var must remain in the format: ((number) (multiplied by) (number)) */;
   /* Fonts & Font Variables */
   --BinderTitleSize: 1.5rem;
@@ -61,8 +63,10 @@
   :root {
     /* Margins */
     --NavGridMargin: 80vw;
+    --CardListMargin: 80vw;
     /* Sizes */
     --BinderSize: 11rem;
+    --CardSize: 14rem;
   }
 }
 
@@ -71,9 +75,12 @@
   :root {
     /* Margins */
     --NavGridMargin: 95vw;
+    --CardListMargin: 95vw;
 
     /* Sizes */
+
     --BinderSize: 9rem;
+    --CardSize: 11rem;
     --SearchBarWidth: calc(100vw - (var(--MenuHeight) * 4));
     --BookmarkBarWidth: calc(100vw - (var(--MenuHeight) * 4));
 

@@ -1,6 +1,6 @@
 .card {
-  height: 15rem;
-  width: 10.5rem;
+  height: var(--CardSize);
+  width: calc(0.7 * var(--CardSize));
   background: center;
   background-size: cover;
   margin: 5px;

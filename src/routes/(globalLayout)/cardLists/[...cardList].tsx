@@ -77,7 +77,7 @@ export default function cardListPage() {
         }
       >
         <div class={styles.sceneContainer}>
-          <div class={styles.cardListContainer}>
+          <div class={styles.cardGrid}>
             <For each={localCardList()} fallback={<div>No Array</div>}>
               {(card) => <Card image={card} />}
             </For>
