@@ -1,0 +1,15 @@
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.errorCode {
+  font-family: var(--SubHeadingFont);
+  font-size: 6rem;
+  color: white;
+  opacity: 50%;
+  font-weight: 700;
+}
